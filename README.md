@@ -1,6 +1,6 @@
 # Introduction
 
-elan is about trust.  Do you trust somebody?
+elan is about trust.  The implicit question it asks is: should I trust this person?
 
 # Details
 ## Principals
