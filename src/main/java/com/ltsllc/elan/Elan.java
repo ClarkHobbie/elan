@@ -6,11 +6,18 @@ import java.io.PrintStream;
 public class Elan {
     public static InputStream in = null;
     public static PrintStream out = null;
+    public static int exitCode = 0;
 
     public static void main(String[] args) {
+        main1(args);
+        System.exit(exitCode);
+    }
+
+    public static void main1(String[] args) {
         if (args.length < 2) {
             printUsage();
-            System.exit (1);
+            Elan.exitCode = 1;
+            return;
         }
 
         //

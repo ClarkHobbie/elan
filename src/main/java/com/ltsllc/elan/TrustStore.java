@@ -1,5 +1,7 @@
 package com.ltsllc.elan;
 
+import com.ltsllc.commons.io.TextFile;
+
 import java.io.File;
 
 /**
@@ -7,6 +9,15 @@ import java.io.File;
  */
 public class TrustStore {
     protected File file = null;
+    protected String[] text;
+
+    public String[] getText() {
+        return text;
+    }
+
+    public void setText(String[] text) {
+        this.text = text;
+    }
 
     public File getFile() {
         return file;
@@ -25,6 +36,9 @@ public class TrustStore {
     }
 
     public void load() {
+        TextFile textFile = new TextFile(file);
 
+        textFile.load();
+        setText(textFile.getTextAsArray());
     }
 }

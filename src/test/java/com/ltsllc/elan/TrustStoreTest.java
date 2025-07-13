@@ -14,8 +14,19 @@ class TrustStoreTest {
 
         File file = new File("whatever");
 
+        String[] text =  {
+                "hello world"
+        };
+
+        TextFile textFile = new TextFile(file);
+        textFile.setText(text);
+        textFile.store();
+
         try {
-            TextFile textFile = new TextFile();
+            TrustStore trustStore = new TrustStore(file);
+            trustStore.load();
+
+            assert (trustStore.getText()[0].equalsIgnoreCase("hello world"));
         } finally {
             if (file.exists()) {
                 file.delete();
