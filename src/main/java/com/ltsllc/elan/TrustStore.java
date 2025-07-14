@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * A repository for trust information.
  */
-public class TrustStore {
+public class TrustStore{
     protected File file = null;
     protected String[] text;
 
