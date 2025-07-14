@@ -1,8 +1,10 @@
 package com.ltsllc.elan;
 
-import com.ltsllc.commons.io.TextFile;
+import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * A repository for trust information.
@@ -10,6 +12,15 @@ import java.io.File;
 public class TrustStore{
     protected File file = null;
     protected String[] text;
+    protected Principal root;
+
+    public Principal getRoot() {
+        return root;
+    }
+
+    public void setRoot(Principal root) {
+        this.root = root;
+    }
 
     public String[] getText() {
         return text;
@@ -36,9 +47,16 @@ public class TrustStore{
     }
 
     public void load() {
-        TextFile textFile = new TextFile(file);
-
-        textFile.load();
-        setText(textFile.getTextAsArray());
+        if (file.exists()) {
+            FileReader fileReader = null;
+            try {
+                fileReader = new FileReader(file);
+                Gson gson = new Gson();
+                root = gson.fromJson(fileReader, Principal.class);
+                fileReader.close();
+            } catch (IOException e) {
+                throw new RuntimeException("error with file, " + file, e);
+            }
+        }
     }
 }
