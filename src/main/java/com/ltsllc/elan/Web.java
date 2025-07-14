@@ -6,8 +6,22 @@ import java.util.List;
 /**
  * A web of trust.
  */
-public class Web {
+public class Web extends Reportable {
     protected List<Relation> leaves = new ArrayList<>();
+    protected Principal root = null;
+
+    public Web(Principal root) {
+        this.root = root;
+        leaves = buildLeaves(this.root);
+    }
+
+    public Principal getRoot() {
+        return root;
+    }
+
+    public void setRoot(Principal root) {
+        this.root = root;
+    }
 
     public List<Relation> getLeaves() {
         return leaves;
@@ -49,5 +63,29 @@ public class Web {
 
         return temp;
     }
+
+    public void printReportFor (Principal principal) {
+        Relation relation = reportFor(principal);
+
+        if (relation == null) {
+            Elan.out.println("0");
+        } else {
+            int level = relation.getSource().getLevel(relation.getDestination());
+            int indent = level * 4;
+
+            printPath(indent, relation.getDestination());
+        }
+    }
+
+    public void printPath (int indent, Principal principal) {
+        if (principal != null) {
+            printIndent(indent);
+            Elan.out.print(principal.getName());
+            Elan.out.print(" (");
+            Elan.out.print(principal.trustPath() * 100);
+            Elan.out.println(")");
+        }
+    }
+
 
 }

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PrincipalTest {
     @Test
     public void constructor() {
-        Principal principal  = new Principal("fred");
+        Principal principal  = new Principal("fred", null);
         assert (principal.hasSameName("fred"));
     }
 
@@ -20,11 +20,11 @@ public class PrincipalTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Elan.out = new PrintStream(baos);
 
-        Principal source = new Principal("tone");
-        Principal destination = new Principal("two");
+        Principal source = new Principal("one", null);
+        Principal destination = new Principal("two", source);
         Relation relation = new Relation(source, destination, 0.99, Relation.TrustType.direct);
         Relation[] relations = { relation };
-        Principal principal = new Principal("one", relations);
+        Principal principal = new Principal("one", null, relations);
         principal.report(0);
         String output = new String(baos.toByteArray());
 
