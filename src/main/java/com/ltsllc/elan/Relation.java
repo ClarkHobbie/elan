@@ -9,6 +9,11 @@ public class Relation extends Reportable {
     protected Principal source;
     protected Principal destination;
 
+    public GsonRelation buildGsonRelation() {
+        GsonRelation gsonRelation = new GsonRelation(source.getName(), destination.getName(), trust, type);
+        return gsonRelation;
+    }
+
     public enum TrustType {
         direct,
         recommendation

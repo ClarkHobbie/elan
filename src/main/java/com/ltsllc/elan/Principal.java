@@ -1,5 +1,6 @@
 package com.ltsllc.elan;
 
+import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -65,7 +66,6 @@ public class Principal extends Reportable{
 
     public void addRelation (String name, Relation relation) {
         relations.put(name, relation);
-
         leaves = buildLeaves(null);
     }
 
@@ -74,14 +74,59 @@ public class Principal extends Reportable{
         return name.equalsIgnoreCase(string);
     }
 
-    public void report (int indent) {
-        printIndent(indent);
-        Elan.out.print(name);
-        Elan.out.println(" has");
-        for (String string : relations.keySet()) {
-            Relation relation = relations.get(string);
-            relation.report(indent + 4);
+    /**
+     * Build a {@link Principal} without cycles to be safe for {@link com.google.gson.Gson}.
+     * @return The principal as described above.
+     */
+    public List<GsonPrincipal> buildGsonPrincipal () {
+        List<GsonPrincipal> list = new ArrayList<>();
+
+        String sourceName = (source == null) ? null : source.getName();
+
+        IdentityHashMap<Principal, Principal> identityHashMap = new IdentityHashMap();
+        identityHashMap.put(this, this);
+
+        for (Relation relation : relations.values()) {
+            if (identityHashMap.containsKey(relation.getDestination())) {
+                // ignore it
+            } else {
+                identityHashMap.put(relation.getDestination(), relation.getDestination());
+                List<GsonPrincipal> list2 = relation.getDestination().buildGsonPrincipal();
+                for (GsonPrincipal gsonPrincipal : list2) {
+                    list.add(gsonPrincipal);
+                }
+            }
         }
+
+        GsonPrincipal gsonPrincipal = new GsonPrincipal(name, sourceName);
+        for (Relation relation : relations.values()) {
+            GsonRelation gsonRelation = relation.buildGsonRelation();
+            gsonPrincipal.addRelation(gsonRelation);
+        }
+        list.add(0, gsonPrincipal);
+
+        return list;
+    }
+
+    public void report (double trust) {
+        if (source == null) {
+            return;
+        }
+
+        Relation relation = source.relations.get(name);
+
+        if (relation == null) {
+            throw new RuntimeException("relation is null");
+        }
+
+        Elan.out.print(source.name);
+        Elan.out.print(" --> ");
+        Elan.out.print(name);
+        Elan.out.print(" (");
+        Elan.out.print(trust * relation.getTrust() * 100);
+        Elan.out.print(") ");
+
+        source.report(trust * relation.getTrust());
     }
 
     public void addRelations (Relation[] relations) {
@@ -154,9 +199,7 @@ public class Principal extends Reportable{
             map = new HashMap<>();
         }
 
-
-        Collection<Relation> col1 = relations.values();
-        for (Relation relation : col1) {
+        for (Relation relation : relations.values()) {
             if (relation.getType() == Relation.TrustType.direct) {
                 if (null == map.get(relation.getDestination().getName())) {
                     map.put(relation.getDestination().getName(), relation);
@@ -179,5 +222,9 @@ public class Principal extends Reportable{
             Principal principal = leaves.get(name).getDestination();
             principal.reportFor();
         }
+    }
+
+    public void report() {
+        report(1);
     }
 }

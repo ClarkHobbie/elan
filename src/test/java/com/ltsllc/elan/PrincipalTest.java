@@ -16,21 +16,22 @@ public class PrincipalTest {
         assert (principal.hasSameName("fred"));
     }
 
-    @org.junit.jupiter.api.Test
-    void report() {
+    @Test
+    public void report() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Elan.out = new PrintStream(baos);
 
-        Principal source = new Principal("one", null);
-        Principal destination = new Principal("two", source);
-        Relation relation = new Relation(source, destination, 0.99, Relation.TrustType.direct);
-        Relation[] relations = { relation };
-        Principal principal = new Principal("one", null, relations);
-        principal.report(0);
+        Principal one = new Principal("one", null);
+        Principal two = new Principal("two", one);
+
+        Relation relation = new Relation(one, two, 0.75, Relation.TrustType.direct);
+        one.addRelation("two", relation);
+
+        two.report();
+
         String output = new String(baos.toByteArray());
 
-        assert (output.startsWith("one has"));
-
+        assert (output.startsWith("one -->"));
     }
 
     @Test

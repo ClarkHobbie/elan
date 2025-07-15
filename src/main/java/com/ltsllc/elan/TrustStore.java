@@ -1,10 +1,10 @@
 package com.ltsllc.elan;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 
 /**
  * A repository for trust information.
@@ -58,5 +58,28 @@ public class TrustStore{
                 throw new RuntimeException("error with file, " + file, e);
             }
         }
+    }
+
+    /**
+     * Store tbe instance to the file associated with it.
+     * <P>
+     *     Note that this routine has to be careful of cycles because Gson cannot handle them.
+     * </P>
+     * @throws IOException
+     * @see Gson
+     */
+    public void store() throws IOException {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+        List<GsonPrincipal> list = root.buildGsonPrincipal();
+        String jason = gson.toJson(list);
+        fileOutputStream.write(jason.getBytes());
+
+        fileOutputStream.close();
     }
 }

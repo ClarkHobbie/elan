@@ -20,4 +20,39 @@ class ElanTest {
 
         assert(new String(baos.toByteArray()).startsWith("usage"));
     }
+
+    /**
+    @Test
+    void processReport() throws Exception {
+        Principal one = new Principal("one", null);
+        Principal two = new Principal("two", one);
+        Principal three = new Principal("three", one);
+
+        Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
+        one.addRelation("two", relation);
+        relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
+        one.addRelation("three", relation);
+
+        File file = new File("whatever");
+        if (file.exists()) {
+            file.delete();
+        }
+
+        try {
+            TrustStore trustStore = new TrustStore(file);
+            trustStore.setRoot(one);
+            trustStore.store();
+
+            Elan elan = new Elan();
+            String[] args = { "three" };
+            elan.processReport(trustStore,args);
+        } finally {
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
+    */
+
+
 }
