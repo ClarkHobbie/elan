@@ -24,7 +24,7 @@ public class Elan {
          // build a web of trust
         //
         TrustStore trustStore = new TrustStore(args[1]);
-
+        trustStore.getRoot().reportFor(args[0]);
     }
 
     public static void printUsage() {
