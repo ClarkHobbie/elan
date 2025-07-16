@@ -239,6 +239,9 @@ public class Principal extends Reportable{
         if ((source == null) && (other.source != null))
             return false;
 
+        if (relations.size() != other.relations.size())
+            return false;
+
         for (Relation relation : relations.values()) {
             if (!relation.equals(other.relations.get(relation.getDestination().getName()))) {
                 return false;
@@ -247,4 +250,42 @@ public class Principal extends Reportable{
 
         return true;
     }
+
+    public List<GsonPrincipal> buildGsonPrincioalList(List<GsonPrincipal> list, Map<String, GsonPrincipal> map) {
+        String source = null;
+
+        if (null != this.source) {
+            source = this.source.getName();
+        }
+
+        GsonPrincipal gsonPrincipal = new GsonPrincipal(name, source);
+        if (!map.containsKey(name)) {
+            list.add (gsonPrincipal);
+        }
+
+        for (Relation relation : relations.values()) {
+            GsonRelation gsonRelation = new GsonRelation(name, relation.getDestination().getName(), relation.getTrust(),
+                    relation.getType());
+            gsonPrincipal.addRelation(gsonRelation);
+            if (!map.containsKey(relation.getDestination().name)) {
+                 GsonPrincipal temp = new GsonPrincipal(relation.getDestination().getName(),
+                         relation.getSource().getName());
+
+                 if (!map.containsKey(relation.getDestination().getName())) {
+                     list.add(temp);
+                 }
+            }
+        }
+
+        return list;
+    }
+
+    public GsonPrincipal toGsonPrincipal() {
+        String source = null;
+        if (this.source != null) {
+            source = this.source.getName();
+        }
+        return new GsonPrincipal(name, source);
+    }
+
 }

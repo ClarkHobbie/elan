@@ -48,7 +48,7 @@ class ElanTest {
             elan.main1(args);
             String output = new String(baos.toByteArray());
 
-            assert(output.equalsIgnoreCase("principal, two, not found\r\n"));
+            assert(output.trim().equalsIgnoreCase(""));
             // assert (output.equalsIgnoreCase("usage: elan add principal <trustStore> <principal>\r\n"));
 
             args = new String[]{"add", "principal", "whatever", "iDontExist"};

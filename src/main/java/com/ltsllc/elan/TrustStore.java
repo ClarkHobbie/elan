@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +17,7 @@ import java.util.Map;
 /**
  * A repository for trust information.
  */
-public class TrustStore{
+public class TrustStore {
     protected File file = null;
     protected String[] text;
     protected Principal root;
@@ -54,26 +57,62 @@ public class TrustStore{
     public void load() throws IOException {
         if (!file.exists()) {
             throw new IOException("the trustStore file, " + file + ", does not exist");
-        } else {
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(file);
-                String json = new String(fileInputStream.readAllBytes());
-                Gson gson = new Gson();
-                Class<List> type = List.class;
-
-                // Type listType = new TypeToken<ArrayList<GsonPrincipal>>(){}.getType();
-                // ArrayList<GsonPrincipal> myCustomList = gson.fromJson(json, listType);
-                GsonPrincipal gsonPrincipal = gson.fromJson(json, GsonPrincipal.class);
-                Map<String, Principal> map = gsonPrincipal.buildPrincipalMap(new HashMap<>());
-                Principal principal1 = gsonPrincipal.buildRelations(map);
-                Object object = ((GsonPrincipal)gsonPrincipal).buildPrincipal(new HashMap<>());
-                this.root = (Principal) object;
-                fileInputStream.close();
-            } catch (IOException e) {
-                throw new RuntimeException("error with file, " + file, e);
-            }
         }
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(file);
+            String json = new String(fileInputStream.readAllBytes());
+            Gson gson = new Gson();
+            Type type = TypeToken.getParameterized(List.class, GsonPrincipal.class).getType();
+            List<GsonPrincipal> list = gson.fromJson(json, type);
+
+            //
+             // get a map of names to principals
+            //
+            Map<String, Principal> map = new HashMap<>();
+            for (GsonPrincipal gsonPrincipal : list) {
+                Principal prinicpal = gsonPrincipal.toPrincipal();
+                if (!map.containsKey(prinicpal.getName())) {
+                    map.put (prinicpal.getName(), prinicpal);
+                }
+            }
+
+            //
+             // fixup the source
+            //
+            Principal root = null;
+            for (GsonPrincipal gsonPrincipal : list) {
+                Principal principal = map.get(gsonPrincipal.getName());
+                Principal source = null;
+
+                if (gsonPrincipal.getSource() != null) {
+                    source = map.get(gsonPrincipal.getSource());
+                }
+
+                principal.setSource(source);
+
+                if (principal.getSource() == null) {
+                    root = principal;
+                }
+            }
+
+            //
+             // fixup the relationships
+            //
+            for (GsonPrincipal gsonPrincipal : list) {
+                Principal principal = map.get(gsonPrincipal.getName());
+                for (GsonRelation gsonRelation : gsonPrincipal.getRelations().values()) {
+                    Relation relation = gsonRelation.buildRelation(map);
+                    principal.addRelation(gsonRelation.getDestination(), relation);
+                }
+            }
+
+            this.root = root;
+        } catch (IOException e) {
+            throw new RuntimeException("error with file, " + file, e);
+        }
+
     }
 
     /**
@@ -92,8 +131,8 @@ public class TrustStore{
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-        GsonPrincipal gsonPrincipal = root.buildGsonPrincipal();
-        String json = gson.toJson(gsonPrincipal);
+        List<GsonPrincipal> gsonPrincipals = root.buildGsonPrincioalList(new ArrayList<>(), new HashMap<>());
+        String json = gson.toJson(gsonPrincipals);
         fileOutputStream.write(json.getBytes());
 
         fileOutputStream.close();

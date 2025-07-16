@@ -64,6 +64,12 @@ public class GsonPrincipal {
         Principal principal = new Principal(name, null);
         map.put(name, principal);
 
+        for (GsonRelation gsonRelation  : relations.values()) {
+            Principal source = map.get(gsonRelation.getSource());
+            map.put(source.getName(), source);
+            Principal destination = map.get(gsonRelation.destination);
+            map.put(destination.getName(), destination);
+        }
         return map;
     }
 
@@ -75,5 +81,10 @@ public class GsonPrincipal {
         }
 
         return map.get(name);
+    }
+
+    public Principal toPrincipal() {
+        Principal principal = new Principal(name, null);
+        return principal;
     }
 }

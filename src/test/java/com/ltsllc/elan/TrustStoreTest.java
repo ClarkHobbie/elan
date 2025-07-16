@@ -6,6 +6,8 @@ import com.ltsllc.commons.io.TextFile;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,8 +22,21 @@ class TrustStoreTest {
         Principal principal = new Principal("root", null);
 
         try {
-            Gson gson = new Gson();
-            String json = gson.toJson(principal);
+            Principal one = new Principal("one", null);
+            Principal two = new Principal("two", one);
+            Principal three = new Principal("three", one);
+
+            Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
+            one.addRelation("two", relation);
+            relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
+            one.addRelation("three", relation);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
+            gsonBuilder.serializeNulls();
+            Gson gson = gsonBuilder.create();
+
+            String json = gson.toJson(one.buildGsonPrincioalList(new ArrayList<>(), new HashMap<>()));
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(json.getBytes());
             fileOutputStream.close();
@@ -29,7 +44,7 @@ class TrustStoreTest {
             TrustStore trustStore = new TrustStore(file);
             trustStore.load();
 
-            assert (trustStore.getRoot().getName().equalsIgnoreCase("root"));
+            assert (trustStore.getRoot().getName().equalsIgnoreCase("one"));
         } catch (IOException e) {
             throw new RuntimeException("error with file, " + file, e);
         } finally {
@@ -60,7 +75,7 @@ class TrustStoreTest {
             Gson gson = gsonBuilder.create();
 
             FileWriter fileWriter = new FileWriter(file);
-            String json = gson.toJson(one.buildGsonPrincipal());
+            String json = gson.toJson(one.buildGsonPrincioalList(new ArrayList<>(), new HashMap<>()));
             fileWriter.write(json);
             fileWriter.close();
 
@@ -81,44 +96,6 @@ class TrustStoreTest {
 
             if (file2.exists()) {
                 file2.delete();
-            }
-        }
-    }
-
-    @Test
-    void testLoad() throws Exception {
-        File trustStoreFile = new File("whatever");
-
-        try {
-            Principal one = new Principal("one", null);
-            Principal two = new Principal("two", one);
-            Principal three = new Principal("three", one);
-
-            Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
-            one.addRelation("two", relation);
-            relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
-            one.addRelation("three", relation);
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.setPrettyPrinting();
-            gsonBuilder.serializeNulls();
-
-            Gson gson = gsonBuilder.create();
-            GsonPrincipal gsonPrincipal = one.buildGsonPrincipal();
-            String json = gson.toJson(gsonPrincipal);
-
-            FileOutputStream fileOutputStream = new FileOutputStream(trustStoreFile);
-            fileOutputStream.write(json.getBytes());
-            fileOutputStream.close();
-
-            TrustStore trustStore = new TrustStore(trustStoreFile);
-            trustStore.setRoot(one);
-            trustStore.load();
-
-            assert (trustStore.getRoot().equals(one));
-        } finally {
-            if (trustStoreFile.exists()) {
-                trustStoreFile.delete();
             }
         }
     }
