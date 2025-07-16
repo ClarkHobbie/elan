@@ -46,4 +46,34 @@ public class GsonPrincipal {
     public void addRelation(GsonRelation gsonRelation) {
         relations.put(gsonRelation.getDestination(), gsonRelation);
     }
+
+    public Principal buildPrincipal(Map<String, Principal> map) {
+        Principal principal = new Principal(name, null);
+        for (GsonRelation gsonRelation : relations.values()) {
+            Relation relation = gsonRelation.buildRelation(map);
+            // principal.addRelation(gsonRelation.getDestination(), relation);
+        }
+        principal.setSource((Principal) map.get(source));
+        map.put(principal.getName(), principal);
+
+
+        return principal;
+    }
+
+    public Map<String, Principal> buildPrincipalMap(HashMap<String, Principal> map) {
+        Principal principal = new Principal(name, null);
+        map.put(name, principal);
+
+        return map;
+    }
+
+    public Principal buildRelations(Map<String, Principal> map) {
+        for (GsonRelation gsonRelation : relations.values()) {
+            Relation relation = gsonRelation.buildRelation(map);
+            Principal principal = map.get(name);
+            principal.addRelation(gsonRelation.getDestination(), relation);
+        }
+
+        return map.get(name);
+    }
 }

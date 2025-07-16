@@ -66,7 +66,7 @@ public class Principal extends Reportable{
 
     public void addRelation (String name, Relation relation) {
         relations.put(name, relation);
-        leaves = buildLeaves(null);
+        // leaves = buildLeaves(new HashMap<>());
     }
 
 
@@ -78,7 +78,7 @@ public class Principal extends Reportable{
      * Build a {@link Principal} without cycles to be safe for {@link com.google.gson.Gson}.
      * @return The principal as described above.
      */
-    public List<GsonPrincipal> buildGsonPrincipal () {
+    public GsonPrincipal buildGsonPrincipal () {
         List<GsonPrincipal> list = new ArrayList<>();
 
         String sourceName = (source == null) ? null : source.getName();
@@ -91,10 +91,6 @@ public class Principal extends Reportable{
                 // ignore it
             } else {
                 identityHashMap.put(relation.getDestination(), relation.getDestination());
-                List<GsonPrincipal> list2 = relation.getDestination().buildGsonPrincipal();
-                for (GsonPrincipal gsonPrincipal : list2) {
-                    list.add(gsonPrincipal);
-                }
             }
         }
 
@@ -103,9 +99,7 @@ public class Principal extends Reportable{
             GsonRelation gsonRelation = relation.buildGsonRelation();
             gsonPrincipal.addRelation(gsonRelation);
         }
-        list.add(0, gsonPrincipal);
-
-        return list;
+        return gsonPrincipal;
     }
 
     public void report (double trust) {
@@ -209,7 +203,7 @@ public class Principal extends Reportable{
                     throw new RuntimeException("impossible case");
                 }
             } else if (relation.getType() == Relation.TrustType.recommendation) {
-                relation.getDestination().buildLeaves(map);
+                // relation.getDestination().buildLeaves(map);
             }
         }
         return map;
@@ -226,5 +220,14 @@ public class Principal extends Reportable{
 
     public void report() {
         report(1);
+    }
+
+    public Principal findPrincipal(String principalName) {
+        for (Relation relation : relations.values()) {
+            if (relation.getDestination().getName().equalsIgnoreCase(principalName)) {
+                return relation.getDestination();
+            }
+        }
+        return null;
     }
 }

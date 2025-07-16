@@ -1,5 +1,7 @@
 package com.ltsllc.elan;
 
+import java.util.Map;
+
 /**
  * A relation without cycles so it is gson safe.
  */
@@ -46,5 +48,10 @@ public class GsonRelation {
         this.destination = destination;
         this.trust = trust;
         this.type = type;
+    }
+
+    public Relation buildRelation(Map<String, Principal> map) {
+        Relation relation = new Relation((Principal) map.get(source), (Principal) map.get(destination), trust, type);
+        return relation;
     }
 }

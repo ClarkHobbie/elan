@@ -6,6 +6,7 @@ import com.ltsllc.commons.io.TextFile;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,5 +83,9 @@ class TrustStoreTest {
                 file2.delete();
             }
         }
+    }
+
+    @Test
+    void testLoad() {
     }
 }

@@ -2,9 +2,14 @@ package com.ltsllc.elan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A repository for trust information.
@@ -46,14 +51,25 @@ public class TrustStore{
         this.file = file;
     }
 
-    public void load() {
-        if (file.exists()) {
-            FileReader fileReader = null;
+    public void load() throws IOException {
+        if (!file.exists()) {
+            throw new IOException("the trustStore file, " + file + ", does not exist");
+        } else {
+            FileInputStream fileInputStream = null;
             try {
-                fileReader = new FileReader(file);
+                fileInputStream = new FileInputStream(file);
+                String json = new String(fileInputStream.readAllBytes());
                 Gson gson = new Gson();
-                root = gson.fromJson(fileReader, Principal.class);
-                fileReader.close();
+                Class<List> type = List.class;
+
+                // Type listType = new TypeToken<ArrayList<GsonPrincipal>>(){}.getType();
+                // ArrayList<GsonPrincipal> myCustomList = gson.fromJson(json, listType);
+                GsonPrincipal gsonPrincipal = gson.fromJson(json, GsonPrincipal.class);
+                Map<String, Principal> map = gsonPrincipal.buildPrincipalMap(new HashMap<>());
+                Principal principal1 = gsonPrincipal.buildRelations(map);
+                Object object = ((GsonPrincipal)gsonPrincipal).buildPrincipal(new HashMap<>());
+                this.root = (Principal) object;
+                fileInputStream.close();
             } catch (IOException e) {
                 throw new RuntimeException("error with file, " + file, e);
             }
@@ -76,9 +92,9 @@ public class TrustStore{
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-        List<GsonPrincipal> list = root.buildGsonPrincipal();
-        String jason = gson.toJson(list);
-        fileOutputStream.write(jason.getBytes());
+        GsonPrincipal gsonPrincipal = root.buildGsonPrincipal();
+        String json = gson.toJson(gsonPrincipal);
+        fileOutputStream.write(json.getBytes());
 
         fileOutputStream.close();
     }
