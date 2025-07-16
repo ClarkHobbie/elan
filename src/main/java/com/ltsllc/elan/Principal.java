@@ -230,4 +230,21 @@ public class Principal extends Reportable{
         }
         return null;
     }
+
+    public boolean equals (Object object) {
+        if (null == object || !(object instanceof Principal))
+            return false;
+
+        Principal other = (Principal) object;
+        if ((source == null) && (other.source != null))
+            return false;
+
+        for (Relation relation : relations.values()) {
+            if (!relation.equals(other.relations.get(relation.getDestination().getName()))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

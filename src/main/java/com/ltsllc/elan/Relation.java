@@ -63,4 +63,25 @@ public class Relation extends Reportable {
         printIndent(indent);
         Elan.out.print (" trusts(" + asPercentage(trust) + "%) ");
     }
+
+    public boolean equals (Object object) {
+        if (null == object || !(object instanceof Relation)) {
+            return false;
+        }
+
+        Relation other = (Relation) object;
+        if (!other.destination.equals(destination))
+            return false;
+
+        if (!other.source.equals(source))
+            return false;
+
+        if (other.trust != trust)
+            return false;
+
+        if (other.type != type)
+            return false;
+
+        return true;
+    }
 }

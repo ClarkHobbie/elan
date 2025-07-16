@@ -86,6 +86,40 @@ class TrustStoreTest {
     }
 
     @Test
-    void testLoad() {
+    void testLoad() throws Exception {
+        File trustStoreFile = new File("whatever");
+
+        try {
+            Principal one = new Principal("one", null);
+            Principal two = new Principal("two", one);
+            Principal three = new Principal("three", one);
+
+            Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
+            one.addRelation("two", relation);
+            relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
+            one.addRelation("three", relation);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
+            gsonBuilder.serializeNulls();
+
+            Gson gson = gsonBuilder.create();
+            GsonPrincipal gsonPrincipal = one.buildGsonPrincipal();
+            String json = gson.toJson(gsonPrincipal);
+
+            FileOutputStream fileOutputStream = new FileOutputStream(trustStoreFile);
+            fileOutputStream.write(json.getBytes());
+            fileOutputStream.close();
+
+            TrustStore trustStore = new TrustStore(trustStoreFile);
+            trustStore.setRoot(one);
+            trustStore.load();
+
+            assert (trustStore.getRoot().equals(one));
+        } finally {
+            if (trustStoreFile.exists()) {
+                trustStoreFile.delete();
+            }
+        }
     }
 }
