@@ -131,7 +131,9 @@ public class TrustStore {
 
         FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-        List<GsonPrincipal> gsonPrincipals = root.buildGsonPrincioalList(new ArrayList<>(), new HashMap<>());
+        Map<String, GsonPrincipal> map = new HashMap<>();
+        root.buildGsonPrincipalMap(map);
+        List<GsonPrincipal> gsonPrincipals = new ArrayList<GsonPrincipal>(map.values());
         String json = gson.toJson(gsonPrincipals);
         fileOutputStream.write(json.getBytes());
 

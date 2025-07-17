@@ -1,6 +1,5 @@
 package com.ltsllc.elan;
 
-import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -251,7 +250,7 @@ public class Principal extends Reportable{
         return true;
     }
 
-    public List<GsonPrincipal> buildGsonPrincioalList(List<GsonPrincipal> list, Map<String, GsonPrincipal> map) {
+    public void buildGsonPrincipalMap(Map<String, GsonPrincipal> map) {
         String source = null;
 
         if (null != this.source) {
@@ -259,25 +258,19 @@ public class Principal extends Reportable{
         }
 
         GsonPrincipal gsonPrincipal = new GsonPrincipal(name, source);
-        if (!map.containsKey(name)) {
-            list.add (gsonPrincipal);
+        if (!map.containsKey(gsonPrincipal.getName())) {
+            map.put(gsonPrincipal.getName(), gsonPrincipal);
         }
-
         for (Relation relation : relations.values()) {
             GsonRelation gsonRelation = new GsonRelation(name, relation.getDestination().getName(), relation.getTrust(),
                     relation.getType());
+            relation.getDestination().buildGsonPrincipalMap(map);
             gsonPrincipal.addRelation(gsonRelation);
-            if (!map.containsKey(relation.getDestination().name)) {
-                 GsonPrincipal temp = new GsonPrincipal(relation.getDestination().getName(),
-                         relation.getSource().getName());
-
-                 if (!map.containsKey(relation.getDestination().getName())) {
-                     list.add(temp);
-                 }
+            GsonPrincipal temp = new GsonPrincipal(relation.getDestination().getName(), relation.getSource().getName());
+            if (!map.containsKey(relation.getDestination().getName())) {
+                map.put(relation.getDestination().getName(), temp);
             }
         }
-
-        return list;
     }
 
     public GsonPrincipal toGsonPrincipal() {
