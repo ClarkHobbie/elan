@@ -1,5 +1,7 @@
 package com.ltsllc.elan;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -9,7 +11,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PrincipalTest {
+public class PrincipalTest extends ElanTestCase{
     @Test
     public void constructor() {
         Principal principal  = new Principal("fred", null);
@@ -72,5 +74,19 @@ public class PrincipalTest {
         Principal temp2 = map.get(three.getName()).getDestination();
 
         assert (temp1 == one && temp2 == three);
+    }
+
+    @Test
+    public void show() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        Principal root = buildNetwork();
+        root.show();
+
+        String output = new String(baos.toByteArray());
+        String expected = new String("one  --> (99.0) two  --> (99.0) twoDotTwo \r\n    twoDotOne \r\n    three ");
+        assert (output.equalsIgnoreCase(expected));
     }
 }
