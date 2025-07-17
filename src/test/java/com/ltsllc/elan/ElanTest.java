@@ -12,17 +12,20 @@ class ElanTest {
     void main1() {
         Elan elan = new Elan();
         String[] args = {};
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
         Elan.in = System.in;
-        Elan.out = printStream;
+        Elan.err = printStream;
+
         Elan.main1(args);
 
-        assert(new String(baos.toByteArray()).startsWith("usage"));
+        String string = new String(baos.toByteArray());
+
+        assert(string.trim().startsWith("usage:"));
     }
 
-    @Test
-    void processAddPrincipal() throws Exception {
+    public Principal buildNetwork () {
         Principal one = new Principal("one", null);
         Principal two = new Principal("two", one);
         Principal twoDotOne = new Principal("twoDotOne", two);
@@ -38,10 +41,15 @@ class ElanTest {
         relation = new Relation(two, twoDotTwo, 0.99, Relation.TrustType.recommendation);
         two.addRelation("twoDotTwo", relation);
 
+        return one;
+    }
+
+    @Test
+    void processAddPrincipal() throws Exception {
         File trustStoreFile = new File("whatever");
 
         TrustStore trustStore = new TrustStore(trustStoreFile);
-        trustStore.setRoot(one);
+        trustStore.setRoot(buildNetwork());
         trustStore.store();
 
         try {
@@ -50,26 +58,71 @@ class ElanTest {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             elan.out = new PrintStream(baos);
 
-            String[] args = {"add", "principal", "whatever", "two"};
+            String[] args = {
+                    "whatever",
+                    "add",
+                    "principal",
+                    "twoDotThree",
+                    "two",
+                    "0.75",
+                    "direct"
+            };
             elan.main1(args);
             String output = new String(baos.toByteArray());
 
             assert(output.trim().equalsIgnoreCase(""));
-            // assert (output.equalsIgnoreCase("usage: elan add principal <trustStore> <principal>\r\n"));
 
-            args = new String[]{"add", "principal", "whatever", "iDontExist"};
+            args = new String[]{"whatever", "add", "principal", "iDontExist"};
             baos = new ByteArrayOutputStream();
-            Elan.out = new PrintStream(baos);
+            Elan.err = new PrintStream(baos);
             elan.main1(args);
             output = new String(baos.toByteArray());
 
-            assert(output.trim().equalsIgnoreCase("principal, iDontExist, not found"));
-            // assert (output.trim().startsWith("could not find principal"));
+            assert(output.trim().equalsIgnoreCase("usage: elan <trustStore> add principal <name> <source> <trust> <type>"));
         } finally {
             if (trustStoreFile.exists()) {
                 trustStoreFile.delete();
             }
         }
+    }
+
+    @Test
+    void processCommand() {
+        Elan elan = new Elan();
+
+
+    }
+
+    @Test
+    void processAdd() {
+    }
+
+    @Test
+    void processAddRelation() {
+    }
+
+    @Test
+    void testProcessAddPrincipal() {
+    }
+
+    @Test
+    void processReport() {
+    }
+
+    @Test
+    void processShow() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        buildNetwork().show();
+
+        String output = new String(baos.toByteArray());
+        String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
+                "    twoDotOne \r\n" +
+                "    three ";
+
+        assert (output.equalsIgnoreCase(expected));
     }
 
     /**

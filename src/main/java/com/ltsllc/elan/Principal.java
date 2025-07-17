@@ -281,4 +281,52 @@ public class Principal extends Reportable{
         return new GsonPrincipal(name, source);
     }
 
+    /**
+     * A method that builds a map from principal names to principals.
+     *
+     * @param map The current map.
+     */
+    public void buildPrincipalMap(Map<String, Principal> map) {
+        if (!map.containsKey(name)) {
+            map.put (name, this);
+        }
+
+        for (Relation relation : relations.values()) {
+            relation.getDestination().buildPrincipalMap(map);
+        }
+    }
+
+    public void show() {
+        Elan.out.print(name);
+        Elan.out.print(" ");
+
+        boolean first = true;
+        for (Relation relation : relations.values()) {
+            if (!first) {
+                Elan.out.println();
+                printIndent(4);
+            } else {
+                Elan.out.print(" --> (");
+                Elan.out.print(relation.getTrust() * 100);
+                Elan.out.print(") ");
+                first = false;
+            }
+            relation.getDestination().show();
+        }
+    }
+
+    private void show(int indent) {
+        printIndent(indent);
+        Elan.out.print(name);
+        boolean first = true;
+
+        for (Relation relation : relations.values()) {
+            if (!first) {
+                printIndent(indent);
+            }
+            first = false;
+
+            relation.getDestination().show(4 + indent);
+        }
+    }
 }
