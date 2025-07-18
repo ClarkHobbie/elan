@@ -1,6 +1,16 @@
 package com.ltsllc.elan;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ltsllc.commons.test.TestCase;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ElanTestCase extends TestCase {
     public Principal buildNetwork () {
@@ -20,5 +30,27 @@ public class ElanTestCase extends TestCase {
         two.addRelation("twoDotTwo", relation);
 
         return one;
+    }
+
+    public TrustStore buildTrustStore(File file) throws Exception {
+        Principal root = buildNetwork();
+        Map<String, GsonPrincipal> gsonPrincipalMap = new HashMap<>();
+        root.buildGsonPrincipalMap(gsonPrincipalMap);
+        List<GsonPrincipal> list = new ArrayList<>(gsonPrincipalMap.values());
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+        String json = gson.toJson(list);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(json.getBytes());
+        fileOutputStream.close();
+
+        TrustStore trustStore = new TrustStore(file);
+        trustStore.load();
+
+        return trustStore;
     }
 }

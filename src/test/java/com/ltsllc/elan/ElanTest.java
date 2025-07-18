@@ -193,7 +193,31 @@ public class ElanTest extends ElanTestCase {
     }
 
     @Test
-    void processRemovePrincipal () {
+    void processRemovePrincipal () throws Exception {
+        Principal root = buildNetwork();
 
+        File trustStoreFile = new File("whatever");
+
+        TrustStore trustStore = buildTrustStore(trustStoreFile);
+
+        String[] args = { "three" };
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        Elan elan = new Elan();
+        elan.processRemovePrincipal(trustStore, args);
+
+        String output = new String(baos.toByteArray());
+        String expected = "";
+
+        assert(output.equalsIgnoreCase(expected));
+
+        Map<String, Principal> principalMap = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
+        Principal principal = principalMap.get("three");
+
+        assert (principal == null);
     }
 }

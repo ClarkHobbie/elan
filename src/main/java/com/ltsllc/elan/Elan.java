@@ -81,7 +81,7 @@ public class Elan {
         }
     }
 
-    private void processRemovePrincipal(TrustStore trustStore, String[] args) {
+    public void processRemovePrincipal(TrustStore trustStore, String[] args) {
         if (args.length < 1) {
             Elan.err.println("usage: elan <trustStore> remove principal <principal name>");
             Elan.exitCode = 1;
