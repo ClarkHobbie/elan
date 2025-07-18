@@ -32,11 +32,14 @@ class GsonPrincipalTest extends ElanTestCase {
     }
 
     @Test
-    void buildPrincipal() {
-    }
-
-    @Test
     void buildPrincipalMap() {
+        Principal root = buildNetwork();
+        Map<String, Principal> principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+
+        Principal one = principalMap.get("one");
+        assert (one != null);
+        assert (one.getName().equalsIgnoreCase("one"));
     }
 
     @Test
