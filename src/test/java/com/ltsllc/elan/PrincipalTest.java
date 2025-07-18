@@ -89,4 +89,8 @@ public class PrincipalTest extends ElanTestCase{
         String expected = new String("one  --> (99.0) two  --> (99.0) twoDotTwo \r\n    twoDotOne \r\n    three ");
         assert (output.equalsIgnoreCase(expected));
     }
+
+    @Test
+    public void printReport() {
+    }
 }

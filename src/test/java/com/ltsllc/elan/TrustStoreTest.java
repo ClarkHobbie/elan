@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class TrustStoreTest {
+class TrustStoreTest extends ElanTestCase {
 
     @Test
     void load() throws Exception {
@@ -21,30 +21,18 @@ class TrustStoreTest {
         Principal principal = new Principal("root", null);
 
         try {
-            Principal one = new Principal("one", null);
-            Principal two = new Principal("two", one);
-            Principal twoDotOne = new Principal("twoDotOne", two);
-            Principal twoDotTwo = new Principal("twoDotTwo", two);
-            Principal three = new Principal("three", one);
-
-            Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
-            one.addRelation("two", relation);
-            relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
-            one.addRelation("three", relation);
-            relation = new Relation(two, twoDotOne, 0.66, Relation.TrustType.direct);
-            two.addRelation("twoDotOne", relation);
-            relation = new Relation(two, twoDotTwo, 0.99, Relation.TrustType.recommendation);
-            two.addRelation("twoDotTwo", relation);
-
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.setPrettyPrinting();
             gsonBuilder.serializeNulls();
             Gson gson = gsonBuilder.create();
 
+            Principal root = buildNetwork();
             Map<String, GsonPrincipal> map = new HashMap<>();
-            one.buildGsonPrincipalMap(map);
+            root.buildGsonPrincipalMap(map);
+
             List<GsonPrincipal> list = new ArrayList<GsonPrincipal>(map.values());
             String json = gson.toJson(list);
+
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(json.getBytes());
             fileOutputStream.close();
@@ -68,36 +56,24 @@ class TrustStoreTest {
         File file2 = new File("test");
 
         try {
-            Principal one = new Principal("one", null);
-            Principal two = new Principal("two", one);
-            Principal twoDotOne = new Principal("twoDotOne", two);
-            Principal twoDotTwo = new Principal("twoDotTwo", two);
-            Principal three = new Principal("three", one);
-
-            Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
-            one.addRelation("two", relation);
-            relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
-            one.addRelation("three", relation);
-            relation = new Relation(two, twoDotOne, 0.66, Relation.TrustType.direct);
-            two.addRelation("twoDotOne", relation);
-            relation = new Relation(two, twoDotTwo, 0.99, Relation.TrustType.recommendation);
-            two.addRelation("twoDotTwo", relation);
-
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.setPrettyPrinting();
             gsonBuilder.serializeNulls();
             Gson gson = gsonBuilder.create();
 
-            FileWriter fileWriter = new FileWriter(file);
+            Principal root = buildNetwork();
+
             Map<String, GsonPrincipal> map = new HashMap<>();
-            one.buildGsonPrincipalMap(map);
+            root.buildGsonPrincipalMap(map);
             List<GsonPrincipal> list = new ArrayList<GsonPrincipal>(map.values());
+
             String json = gson.toJson(list);
+            FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(json);
             fileWriter.close();
 
             TrustStore trustStore = new TrustStore(file2);
-            trustStore.setRoot(one);
+            trustStore.setRoot(root);
             trustStore.store();
 
             TextFile textFile1 = new TextFile(file);
