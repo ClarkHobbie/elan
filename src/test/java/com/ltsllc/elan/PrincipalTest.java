@@ -125,4 +125,22 @@ public class PrincipalTest extends ElanTestCase{
 
         assert (output.equalsIgnoreCase(expected));
     }
+
+    @Test
+    public void removeRelation() {
+        Principal root = buildNetwork();
+
+        Relation relation = root.getRelations().get("three");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        root.removeRelation(relation);
+
+        String output = new String(baos.toByteArray());
+        String expected = "";
+
+        assert (output.equalsIgnoreCase(expected));
+    }
 }

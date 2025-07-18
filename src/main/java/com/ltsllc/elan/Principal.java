@@ -302,7 +302,7 @@ public class Principal extends Reportable{
         }
     }
 
-    private void show(int indent) {
+    public void show(int indent) {
         printIndent(indent);
         Elan.out.print(name);
         boolean first = true;
@@ -382,5 +382,9 @@ public class Principal extends Reportable{
                 relation.getDestination().removePrincipal(subject);
             }
         }
+    }
+
+    public void removeRelation (Relation relation) {
+        relations.remove(relation.getDestination().getName());
     }
 }
