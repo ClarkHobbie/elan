@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,22 +73,53 @@ public class ElanTest extends ElanTestCase {
     }
 
     @Test
-    void processCommand() {
-        Elan elan = new Elan();
+    void processAddRelation() throws Exception {
+        // elan <trustStore file name> add relation <source name> <destination name> <trust> <type>
 
+        File trustStoreFile = new File("whatever");
 
-    }
+        String[] args = {
+                "two",
+                "twoDotThree",
+                "0.66",
+                "direct"
+        };
 
-    @Test
-    void processAdd() {
-    }
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(baos);
+            Elan.out = printStream;
 
-    @Test
-    void processAddRelation() {
-    }
+            TrustStore trustStore = new TrustStore(trustStoreFile);
+            trustStore.setRoot(buildNetwork());
+            trustStore.store();
 
-    @Test
-    void testProcessAddPrincipal() {
+            Elan elan = new Elan();
+            elan.processAddRelation(trustStore, args);
+
+            args = new String[]{
+                    "whatever",
+                    "show"
+            };
+
+            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+            printStream = new PrintStream(baos2);
+            Elan.err = printStream;
+
+            Elan.main1(args);
+
+            String errorOutput = new String(baos2.toByteArray());
+            String output = new String(baos.toByteArray());
+            String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
+                    "    twoDotOne \r\n" +
+                    "    three ";
+
+            assert (output.equalsIgnoreCase(expected));
+        } finally {
+            if (trustStoreFile.exists()) {
+                trustStoreFile.delete();
+            }
+        }
     }
 
     @Test

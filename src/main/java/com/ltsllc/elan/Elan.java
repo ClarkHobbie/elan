@@ -50,12 +50,6 @@ public class Elan {
     }
 
     public void processCommand (String command, TrustStore trustStore, String[] args) {
-        if (args.length < 1) {
-            printUsage();
-            Elan.exitCode = 1;
-            return;
-        }
-
         if (command.equalsIgnoreCase("add")) {
             processAdd(trustStore, args);
         } else if (command.equalsIgnoreCase("show")) {
@@ -83,6 +77,8 @@ public class Elan {
 
         if (subCommand.equalsIgnoreCase("principal")) {
             processAddPrincipal(trustStore, args);
+        } else if (subCommand.equalsIgnoreCase("relation")) {
+            processAddRelation(trustStore, args);
         } else {
             Elan.err.println("unknown command, " + subCommand);
             Elan.exitCode = 1;
@@ -152,5 +148,27 @@ public class Elan {
 
     public static void printUsage() {
         Elan.err.println("usage: elan <trustStore> <command> <arguments>");
+    }
+
+    public void processAddRelation(TrustStore trustStore, String[] args) {
+        // <source name> <destination name> <trust> <type>
+        if (args.length < 4) {
+            Elan.err.println("usage: elan <trustStore> add relation <source> <destination> <trust> <type>");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        Map<String, Principal> principalMap = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
+
+        String sourceName = args[0];
+        Principal source = principalMap.get(sourceName);
+        String destName = args[1];
+        Principal destination = principalMap.get(destName);
+        double trust = Double.valueOf(args[2]);
+        String typeString = args[3];
+
+        Relation relation = new Relation(source, destination, trust, Relation.TrustType.valueOf(typeString));
+        source.addRelation(destName, relation);
     }
 }
