@@ -54,11 +54,51 @@ public class Elan {
             processAdd(trustStore, args);
         } else if (command.equalsIgnoreCase("show")) {
             processShow(trustStore);
+        } else if (command.equalsIgnoreCase("remove")) {
+            processRemove(trustStore, args);
         } else {
             Elan.err.println("unknown command, " + command);
             Elan.exitCode = 1;
             return;
         }
+    }
+
+    private void processRemove(TrustStore trustStore, String[] args) {
+        if (args.length < 1) {
+            Elan.err.println("usage: elan <trustStore> remove <arguments>");
+            Elan.exitCode = 1;
+            return;
+        }
+        
+        String command = args[0];
+        args = ImprovedArrays.restOf(args, 2);
+        if (command.equalsIgnoreCase("principal")) {
+            processRemovePrincipal(trustStore, args);
+        } else {
+            Elan.err.println("unknown command, " + command);
+            Elan.exitCode = 1;
+            return;
+        }
+    }
+
+    private void processRemovePrincipal(TrustStore trustStore, String[] args) {
+        if (args.length < 1) {
+            Elan.err.println("usage: elan <trustStore> remove principal <principal name>");
+            Elan.exitCode = 1;
+            return;
+        }
+        
+        String subjectName = args[0];
+        Map<String, Principal> principalMap = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
+        Principal subject = principalMap.get(subjectName);
+        if (subject == null) {
+            Elan.err.println("unknown principal, " + subjectName);
+            Elan.exitCode = 1;
+            return;
+        }
+
+        trustStore.getRoot().removePrincipal(subject);
     }
 
     public void processShow(TrustStore trustStore) {

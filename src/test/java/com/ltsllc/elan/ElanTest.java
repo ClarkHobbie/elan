@@ -191,4 +191,9 @@ public class ElanTest extends ElanTestCase {
             }
         }
     }
+
+    @Test
+    void processRemovePrincipal () {
+
+    }
 }

@@ -373,4 +373,14 @@ public class Principal extends Reportable{
 
         return trust * relationTrust;
     }
+
+    public void removePrincipal(Principal subject) {
+        for (Relation relation : relations.values()) {
+            if (relation.getDestination().getName().equalsIgnoreCase(subject.name)) {
+                relations.remove(subject.name);
+            } else {
+                relation.getDestination().removePrincipal(subject);
+            }
+        }
+    }
 }

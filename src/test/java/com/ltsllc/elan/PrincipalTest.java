@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -102,6 +103,25 @@ public class PrincipalTest extends ElanTestCase{
 
         String output = new String(baos.toByteArray());
         String expected = "one";
+
+        assert (output.equalsIgnoreCase(expected));
+    }
+
+    @Test
+    public void removePrincipal() {
+        Principal root = buildNetwork();
+        Map<String, Principal> principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+        Principal subject = principalMap.get("three");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        root.removePrincipal(subject);
+
+        String output = new String(baos.toByteArray());
+        String expected = "";
 
         assert (output.equalsIgnoreCase(expected));
     }
