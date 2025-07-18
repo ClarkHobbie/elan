@@ -92,5 +92,17 @@ public class PrincipalTest extends ElanTestCase{
 
     @Test
     public void printReport() {
+        Principal root = buildNetwork();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        root.printReport();
+
+        String output = new String(baos.toByteArray());
+        String expected = "one";
+
+        assert (output.equalsIgnoreCase(expected));
     }
 }
