@@ -1,9 +1,12 @@
 package com.ltsllc.elan;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ltsllc.commons.test.TestCase;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,10 +91,6 @@ public class ElanTest extends ElanTestCase {
     }
 
     @Test
-    void processReport() {
-    }
-
-    @Test
     void processShow() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
@@ -107,38 +106,60 @@ public class ElanTest extends ElanTestCase {
         assert (output.equalsIgnoreCase(expected));
     }
 
-    /**
     @Test
     void processReport() throws Exception {
-        Principal one = new Principal("one", null);
-        Principal two = new Principal("two", one);
-        Principal three = new Principal("three", one);
-
-        Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
-        one.addRelation("two", relation);
-        relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
-        one.addRelation("three", relation);
 
         File file = new File("whatever");
         if (file.exists()) {
             file.delete();
         }
 
+        File testFile = new File("test");
+        if (testFile.exists()) {
+            testFile.delete();
+        }
+
         try {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
+            gsonBuilder.serializeNulls();
+            Gson gson = gsonBuilder.create();
+
+            Principal root = buildNetwork();
+            GsonPrincipal gsonPrincipal = root.buildGsonPrincipal(new HashMap<>());
+            String jsonText = gson.toJson(gsonPrincipal);
+
+            FileOutputStream fileOutputStream = new FileOutputStream("test");
+            fileOutputStream.write(jsonText.getBytes());
+            fileOutputStream.close();
+
             TrustStore trustStore = new TrustStore(file);
-            trustStore.setRoot(one);
+            trustStore.setRoot(root);
             trustStore.store();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(baos);
+            Elan.out = printStream;
 
             Elan elan = new Elan();
             String[] args = { "three" };
-            elan.processReport(trustStore,args);
+            elan.processReport(trustStore, args);
+
+            String output = new String(baos.toByteArray());
+            String expected = "one --> (75.0%) three";
+
+            assert(output.equalsIgnoreCase(expected));
         } finally {
             if (file.exists()) {
                 file.delete();
             }
+
+            if (testFile.exists()) {
+                testFile.delete();
+            }
         }
     }
-    */
+
 
 
 }

@@ -161,12 +161,12 @@ public class Principal extends Reportable{
      * @param principal - the principal that the caller wants the report for.
      * @return The trust put into that principal.
      */
-    public double reportFor (Principal principal) {
+    public double report(Principal principal) {
         if (principal == null || principal.source == null) {
             return 1;
         }
 
-        reportFor(principal.source);
+        report(principal.source);
         Relation relation = principal.source.getRelations().get(principal.name);
         Elan.out.print(" ");
         Elan.out.print(name);
@@ -175,10 +175,6 @@ public class Principal extends Reportable{
         Elan.out.print(") ");
 
         return relation.getTrust();
-    }
-
-    public void reportFor() {
-        reportFor(this);
     }
 
     /**
@@ -206,15 +202,6 @@ public class Principal extends Reportable{
             }
         }
         return map;
-    }
-
-    public void reportFor(String name) {
-        if (!leaves.containsKey(name)) {
-            Elan.out.println("unknown");
-        } else {
-            Principal principal = leaves.get(name).getDestination();
-            principal.reportFor();
-        }
     }
 
     public void report() {
@@ -328,5 +315,62 @@ public class Principal extends Reportable{
 
             relation.getDestination().show(4 + indent);
         }
+    }
+
+    public GsonPrincipal buildGsonPrincipal(HashMap<String, GsonPrincipal> map) {
+        String sourceName = (source == null) ? null : source.getName();
+        GsonPrincipal gsonSource = null;
+        if (sourceName != null) {
+            if (map.containsKey(sourceName)) {
+                gsonSource = map.get(sourceName);
+            }
+        }
+
+        GsonPrincipal gsonPrincipal = new GsonPrincipal(name, sourceName);
+
+        for (Relation relation : relations.values()) {
+            GsonRelation gsonRelation = relation.buildGsonRelation();
+            String destinationName = relation.getDestination().getName();
+            if (!map.containsKey(destinationName)) {
+                map.put (destinationName, relation.getDestination().buildGsonPrincipal(map));
+            }
+            gsonPrincipal.addRelation(gsonRelation);
+        }
+
+        return gsonPrincipal;
+    }
+
+    public double printReport () {
+        return printReport(1.0);
+    }
+
+    /**
+     * Print the path to the root and return the trust that the node enjoys.
+     * <P>
+     *      Note that the root is considered to be a {@link Principal} with a null source.
+     * </P>
+     * @param trust The level that the node is trusted, relative to the root.
+     * @return The level of trust that the node has, relative to the root.
+     */
+    public double printReport (double trust) {
+        double relationTrust = 1.0;
+
+        if (source == null) {
+            Elan.out.print(name);
+        } else {
+            for (Relation relation : source.relations.values()) {
+                if (relation.getDestination().equals(this)) {
+                    relation.getSource().printReport(1.0);
+                    Elan.out.print(" --> (");
+                    Elan.out.print(trust * relation.getTrust() * 100);
+                    relationTrust = relation.getTrust();
+                    Elan.out.print("%) ");
+                    Elan.out.print(name);
+                    break;
+                }
+            }
+        }
+
+        return trust * relationTrust;
     }
 }

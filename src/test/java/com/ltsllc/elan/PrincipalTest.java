@@ -50,7 +50,7 @@ public class PrincipalTest extends ElanTestCase{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Elan.out = new PrintStream(baos);
 
-        three.reportFor();
+        three.report();
 
         String output = new String(baos.toByteArray());
 

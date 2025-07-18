@@ -126,26 +126,28 @@ public class Elan {
         source.addRelation(relation.getDestination().getName(), relation);
     }
 
-    public void processReport(String[] args) {
-        if (args.length < 2) {
-            Elan.out.println("usage: elan report <trustStore> <subject>");
+    public void processReport(TrustStore trustStore, String[] args) {
+        if (args.length < 1) {
+            Elan.err.println("usage: elan report <trustStore> <subject>");
             Elan.exitCode = 1;
             return;
         }
 
-        TrustStore trustStore = new TrustStore(args[0]);
-        String subject = args[1];
+        String subject = args[0];
+        Map<String, Principal> map = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(map);
+        Map<String, Principal> principalMap = map;
 
-        if (trustStore.getRoot().getLeaves().get(subject) == null) {
-            Elan.out.print("subject, ");
-            Elan.out.print(subject);
-            Elan.out.print(", is unknown");
+        if (principalMap.get(subject) == null) {
+            Elan.err.print("subject, ");
+            Elan.err.print(subject);
+            Elan.err.print(", is unknown");
             Elan.exitCode = 0;
             return;
         }
 
-        Relation relation = trustStore.getRoot().getLeaves().get(subject);
-        relation.getDestination().report();
+        Principal subjectPrincipal = map.get(subject);
+        subjectPrincipal.printReport();
     }
 
     public static void printUsage() {
