@@ -87,4 +87,14 @@ public class GsonPrincipal {
         Principal principal = new Principal(name, null);
         return principal;
     }
+
+    public GsonRelation getRelation(String name) {
+        for (GsonRelation gsonRelation : relations.values()) {
+            if (gsonRelation.getDestination().equalsIgnoreCase(name)) {
+                return gsonRelation;
+            }
+        }
+
+        return null;
+    }
 }
