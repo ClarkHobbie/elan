@@ -5,8 +5,8 @@ elan is about trust.  The implicit question it asks is: should I trust this pers
 # Details
 ## Terminology
 ### Principal
-In elan discussions, a Principal is a person who has direct experience with people who interest you, or a person who 
-just a person who has relationships with people who do have direct knowledge.  
+In elan discussions, a Principal is a person who you want to know if you can trust, or a person who 
+has relationships with people who do have direct knowledge.  
 
 ### Relation
 In elan, relations tie two principals together.  This relation has a level of trust associated with it, from the source
@@ -16,6 +16,9 @@ recommendation.
 ### TrustStore
 A truststore is where elan stores it's trust information.  It uses it in performing most operations.
 
+A truststore takes the form of a JSON file that represents the list of all principals.  Please note thar in a truststore
+file, all principals (other than those in the list), are stored as names.  Thus a source for a principal is stored as
+the name of the source, rather that the principal itself.
 ### Principal Names
 The name of a principal must unique across all principals.  
 
