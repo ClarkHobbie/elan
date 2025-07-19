@@ -112,7 +112,7 @@ public class PrincipalTest extends ElanTestCase{
         Principal root = buildNetwork();
         Map<String, Principal> principalMap = new HashMap<>();
         root.buildPrincipalMap(principalMap);
-        Principal subject = principalMap.get("three");
+        Principal subject = principalMap.get("twoDotTwo");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
@@ -124,6 +124,11 @@ public class PrincipalTest extends ElanTestCase{
         String expected = "";
 
         assert (output.equalsIgnoreCase(expected));
+
+        principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+
+        assert (!principalMap.containsKey("twoDotTwo"));
     }
 
     @Test

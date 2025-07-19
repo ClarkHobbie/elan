@@ -278,7 +278,8 @@ public class Principal extends Reportable{
             map.put (name, this);
         }
 
-        for (Relation relation : relations.values()) {
+        List<Relation> relationList = new ArrayList<>(relations.values());
+        for (Relation relation : relationList) {
             relation.getDestination().buildPrincipalMap(map);
         }
     }
@@ -375,8 +376,9 @@ public class Principal extends Reportable{
     }
 
     public void removePrincipal(Principal subject) {
-        for (Relation relation : relations.values()) {
-            if (relation.getDestination().getName().equalsIgnoreCase(subject.name)) {
+        List<Relation> list = new ArrayList<>(relations.values());
+        for (Relation relation : list) {
+            if (relation.getDestination().name.equalsIgnoreCase(subject.name)) {
                 relations.remove(subject.name);
             } else {
                 relation.getDestination().removePrincipal(subject);
