@@ -61,3 +61,10 @@ work.
 ``
 elan <trustore> remove principal
 ``
+
+Removes the principal from the system.
+
+### Remove Relation
+``
+elan <truststore> remove relation <destination name>
+``

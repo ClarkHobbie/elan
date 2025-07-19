@@ -6,7 +6,9 @@ import com.ltsllc.commons.test.TestCase;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -219,5 +221,55 @@ public class ElanTest extends ElanTestCase {
         Principal principal = principalMap.get("three");
 
         assert (principal == null);
+    }
+
+    @Test
+    void processRemoveRelation () throws Exception {
+        String[] args = { "one", "three" };
+
+        ByteArrayOutputStream outBaos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outBaos);
+        Elan.out = printStream;
+
+        ByteArrayOutputStream errBaos = new ByteArrayOutputStream();
+        printStream = new PrintStream(errBaos);
+        Elan.err = printStream;
+
+        Principal root = buildNetwork();
+        Map<String, GsonPrincipal> gsonPrincipalMap = new HashMap<>();
+        root.buildGsonPrincipalMap(gsonPrincipalMap);
+        List<GsonPrincipal> list = new ArrayList<>(gsonPrincipalMap.values());
+
+        File file = new File("whatever");
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
+        gsonBuilder.serializeNulls();
+        Gson gson = gsonBuilder.create();
+
+        String json = gson.toJson(list);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(json.getBytes());
+        fileOutputStream.close();
+
+        TrustStore trustStore = new TrustStore(file);
+        trustStore.load();
+
+        Elan elan = new Elan();
+        elan.processRemoveRelation(trustStore, args);
+
+        String output = new String(outBaos.toByteArray());
+        String expectedOutput = "";
+
+        String errorOutput = new String(errBaos.toByteArray());
+        String expectedErrorOutput = "";
+
+        assert (output.equalsIgnoreCase(expectedOutput));
+        assert (errorOutput.equalsIgnoreCase(expectedErrorOutput));
+
+        Principal principal = trustStore.getRoot();
+
+        assert (!principal.getRelations().containsKey("three"));
     }
 }

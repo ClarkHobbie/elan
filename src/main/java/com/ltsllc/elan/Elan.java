@@ -1,13 +1,10 @@
 package com.ltsllc.elan;
 
-import com.ltsllc.commons.util.Bag;
 import com.ltsllc.commons.util.ImprovedArrays;
-import com.ltsllc.commons.util.ImprovedRandom;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,11 +71,45 @@ public class Elan {
         args = ImprovedArrays.restOf(args, 2);
         if (command.equalsIgnoreCase("principal")) {
             processRemovePrincipal(trustStore, args);
+        } else if (command.equalsIgnoreCase("relation")) {
+            processRemoveRelation(trustStore, args);
         } else {
             Elan.err.println("unknown command, " + command);
             Elan.exitCode = 1;
             return;
         }
+    }
+
+    public void processRemoveRelation(TrustStore trustStore, String[] args) {
+        //
+         // elan <truststore> remove relation <principal name> <destination name>
+        //
+        if (args.length < 2) {
+            Elan.err.println("usage: elam <truststore> remove relation <principal name> <destination name>");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        String principalName = args[0];
+        String destinationName = args[1];
+
+        Map<String, Principal> principalMap = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
+        Principal principal = principalMap.get(principalName);
+        if (null == principal) {
+            Elan.err.println("the principal, " + principalName + ", was not found");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        Relation relation = principal.getRelations().get(destinationName);
+        if (null == relation) {
+            Elan.err.println("the relation, " + destinationName + ", was not found");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        principal.removeRelation(relation);
     }
 
     public void processRemovePrincipal(TrustStore trustStore, String[] args) {
