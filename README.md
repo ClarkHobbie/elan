@@ -13,8 +13,11 @@ In elan, relations tie two principals together.  This relation has a level of tr
 principal's perspective, and whether the relation takes the form of direct experience or if it is, itself, a 
 recommendation.
 
-## TrustStore
+### TrustStore
 A truststore is where elan stores it's trust information.  It uses it in performing most operations.
+
+### Principal Names
+The name of a principal must unique across all principals.  
 
 ## Commands
 In elan, a command takes the form of

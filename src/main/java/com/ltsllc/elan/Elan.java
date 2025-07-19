@@ -158,6 +158,7 @@ public class Elan {
     }
 
     public void processAddPrincipal(TrustStore trustStore, String[] args) {
+        // elan <trustStore> add principal <name> <source name> <trust> <direct or recommendation
         if (args.length < 4) {
             Elan.err.println("usage: elan <trustStore> add principal <name> <source> <trust> <type>");
             Elan.exitCode = 1;
@@ -166,6 +167,15 @@ public class Elan {
 
         String principalName = args[0];
         String sourceName = args[1];
+        String trustString = args[2];
+        String experienceString = args[3];
+
+        if (principals.containsKey(principalName)) {
+            Elan.err.println("the name of the new principal, " + principalName + ", is already in use");
+            Elan.exitCode = 1;
+            return;
+        }
+
         Principal source = principals.get(sourceName);
         if (source == null) {
             Elan.err.println("the source principal, " + sourceName + ", was not found.");
@@ -182,11 +192,9 @@ public class Elan {
             principals.put(destination.getName(), destination);
         }
 
-        String trustString = args[2];
         double trustValue = Double.valueOf(trustString);
 
-        String trustTypeString = args[3];
-        Relation.TrustType trustType = Relation.TrustType.valueOf(trustTypeString);
+        Relation.TrustType trustType = Relation.TrustType.valueOf(experienceString);
 
         Relation relation = new Relation(source, destination, trustValue, trustType);
 
