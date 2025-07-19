@@ -237,17 +237,35 @@ public class Elan {
             return;
         }
 
-        Map<String, Principal> principalMap = new HashMap<>();
-        trustStore.getRoot().buildPrincipalMap(principalMap);
-
-        String sourceName = args[0];
-        Principal source = principalMap.get(sourceName);
-        String destName = args[1];
-        Principal destination = principalMap.get(destName);
-        double trust = Double.valueOf(args[2]);
+        String sourceString = args[0];
+        String destSring = args[1];
+        String trustString = args[2];
         String typeString = args[3];
 
-        Relation relation = new Relation(source, destination, trust, Relation.TrustType.valueOf(typeString));
-        source.addRelation(destName, relation);
+        Principal source = principals.get(sourceString);
+        if (source == null) {
+            Elan.err.println("the source, " + sourceString + ", was not found");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        Principal destination = principals.get(destSring);
+        if (destination == null) {
+            Elan.err.println("the destination, " + destSring + ", was not found");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        if (destination.getRelations().containsKey(destSring)) {
+            Elan.err.println("the destination, " + destSring + ", already exists");
+            Elan.exitCode = 1;
+            return;
+        }
+
+        double trust = Double.valueOf(trustString);
+        Relation.TrustType type = Relation.TrustType.valueOf(typeString);
+
+        Relation relation = new Relation(source, destination, trust, type);
+        source.addRelation(destSring, relation);
     }
 }
