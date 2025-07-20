@@ -8,6 +8,35 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A system for managing trust.
+ * <P>
+ *     elan performs commands relating to trust. Commands have the form:
+ * </P>
+ * <P>
+ *     elan &lt;truststore&gt; &lt;command&gt; &lt;arguments&gt;
+ * </P>
+ * <P>
+ *     For example
+ * </P>
+ * <P>
+ *     elan whatever remove principal three
+ * </P>
+ * <P>
+ *     Uses "whatever" as the filename for the truststore, remove principal as the command and three as the name of the
+ *     principal to remove.
+ * </P>
+ * <P>
+ *     The command are:
+ *     <UL>
+ *         <LI>add principal</LI>
+ *         <LI>add relation</LI>
+ *         <LI>remove principal</LI>
+ *         <LI>remove relation</LI>
+ *         <LI>report</LI>
+ *     </UL>
+ * </P>
+ */
 public class Elan {
     public static InputStream in = System.in;
     public static PrintStream out = System.out;
@@ -80,6 +109,18 @@ public class Elan {
         }
     }
 
+    /**
+     * Remove a relation.
+     * <P>
+     *     The form of the command is:
+     * </P>
+     * <P>
+     *     elan remove relation &lt;principal name containing the relation&gt; &lt;the destination name of the relation&gt;
+     * </P>
+     * @param trustStore The truststore for the operation.
+     * @param args The arguments for the operation.  The principal name should be args[0] and the destination name
+     *             should be in args[1].
+     */
     public void processRemoveRelation(TrustStore trustStore, String[] args) {
         //
          // elan <truststore> remove relation <principal name> <destination name>
@@ -112,6 +153,17 @@ public class Elan {
         principal.removeRelation(relation);
     }
 
+    /**
+     * Remove an existing principal from the system.
+     * <P>
+     *     The form of the command is
+     * </P>
+     * <P>
+     *     elan &lt;truststore&gt; remove principal &lt;name of the principal&gt;
+     * </P>
+     * @param trustStore The truststore for the operation.
+     * @param args The arguments for the command.  The name of the principal to be removed should be in args[0].
+     */
     public void processRemovePrincipal(TrustStore trustStore, String[] args) {
         if (args.length < 1) {
             Elan.err.println("usage: elan <trustStore> remove principal <principal name>");
@@ -157,8 +209,26 @@ public class Elan {
         }
     }
 
+
+    /**
+     * Add a principal to the system.
+     * <P>
+     *     Since a principal cannot be added without a relation, this method adds that too.
+     * </P>
+     *
+     * <P>
+     *     The form of the command is
+     * </P>
+     *
+     * <P>
+     *     elan &lt;truststore&gt; add principal &lt;new principal name&gt; &lt;source name&gt; &lt;trust&gt; &lt;type&gt;
+     * </P>
+     * @param trustStore The truststore for the operation.
+     * @param args The arguments for the command.  The name of the principal to be added should be in args[0], the
+     *             source name in args[1], the level of trust in args[2] and the type in args[3].
+     */
     public void processAddPrincipal(TrustStore trustStore, String[] args) {
-        // elan <trustStore> add principal <name> <source name> <trust> <direct or recommendation
+        // elan <trustStore> add principal <name> <source name> <trust> <direct or recommendation>
         if (args.length < 4) {
             Elan.err.println("usage: elan <trustStore> add principal <name> <source> <trust> <type>");
             Elan.exitCode = 1;
@@ -201,9 +271,21 @@ public class Elan {
         source.addRelation(relation.getDestination().getName(), relation);
     }
 
+    /**
+     * Report on a principal.
+     * <P>
+     *     A report takes the form of how much trust you put in a principal (defined as the trust that you put in each
+     *     relation along the way) as well as the path the principal takes to the root. Each link is printed as an
+     *     arrow (-->) with the aggregate trust in parens.  A principal's trust is the product of the trust in a
+     *     relation times the trust in the source of the relation.
+     * </P>
+     * @param trustStore The truststore for the operation.
+     * @param args The arguments for the command.  args[0] should contain the name of the principal to be reported on.
+     *
+     */
     public void processReport(TrustStore trustStore, String[] args) {
         if (args.length < 1) {
-            Elan.err.println("usage: elan report <trustStore> <subject>");
+            Elan.err.println("usage: elan <trustStore> report <subject>");
             Elan.exitCode = 1;
             return;
         }
@@ -229,6 +311,17 @@ public class Elan {
         Elan.err.println("usage: elan <trustStore> <command> <arguments>");
     }
 
+    /**
+     * Add a relation to an existing principal in the system.
+     * <P>
+     *     The source and destination principal must exist before the method is called.
+     * </P>
+     *
+     * @param trustStore The truststore for the operation.
+     * @param args The arguments for the command.  The name of the principal to be added should be in args[0].  The name
+     *             of the source should be in args[1], the level of trust should be in args[2], and the type should be
+     *             in args[3].
+     */
     public void processAddRelation(TrustStore trustStore, String[] args) {
         // <source name> <destination name> <trust> <type>
         if (args.length < 4) {

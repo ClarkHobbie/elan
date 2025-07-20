@@ -16,7 +16,7 @@ recommendation.
 ### TrustStore
 A truststore is where elan stores it's trust information.  It uses it in performing most operations.
 
-A truststore takes the form of a JSON file that represents the list of all principals.  Please note thar in a truststore
+A truststore takes the form of a JSON file that represents the list of all principals.  Please note that in a truststore
 file, all principals (other than those in the list), are stored as names.  Thus a source for a principal is stored as
 the name of the source, rather that the principal itself.
 ### Principal Names
