@@ -25,7 +25,7 @@ public class ElanTest extends ElanTestCase {
         Elan.in = System.in;
         Elan.err = printStream;
 
-        Elan.main1(args);
+        elan.main1(args);
 
         String string = new String(baos.toByteArray());
 
@@ -108,7 +108,7 @@ public class ElanTest extends ElanTestCase {
             printStream = new PrintStream(baos2);
             Elan.err = printStream;
 
-            Elan.main1(args);
+            elan.main1(args);
 
             String errorOutput = new String(baos2.toByteArray());
             String output = new String(baos.toByteArray());

@@ -45,11 +45,19 @@ public class Elan {
     public static Map<String, Principal> principals = new HashMap<>();
 
     public static void main(String[] args) {
-        main1(args);
+        Elan elan = new Elan();
+        elan.main1(args);
         System.exit(exitCode);
     }
 
-    public static void main1(String[] args) {
+    /**
+     * The real main method.
+     * <P>
+     *
+     * </P>
+     * @param args
+     */
+    public void main1(String[] args) {
         if (args.length < 2) {
             printUsage();
             Elan.exitCode = 1;
