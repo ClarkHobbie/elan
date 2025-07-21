@@ -47,15 +47,18 @@ work.
 
 ### Remove Principal
 ``
-elan <trustore> remove principal
+elan <trustore> remove <principal name>
 ``
 
-Removes the principal from the system.
+Removes the existing principal from the system.
 
 ### Remove Relation
 ``
-elan <truststore> remove relation <destination name>
+elan <truststore> remove relation <principal nane> <destination name>
 ``
+
+This command removes a relation from a principal in the system.
+
 ## Terminology
 ### Principal
 In elan discussions, a Principal is a person who you want to know if you can trust, or a person who
