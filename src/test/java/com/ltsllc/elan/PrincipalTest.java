@@ -132,6 +132,39 @@ public class PrincipalTest extends ElanTestCase{
     }
 
     @Test
+    public void getTrust () {
+        Principal root = buildNetwork();
+        double trust = root.getTrust();
+
+        assert (trust == 1.0);
+
+        Map<String, Principal> principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+        Principal three = principalMap.get("three");
+
+        trust = three.getTrust();
+
+        Relation relation =new Relation(root, three, 1.0, Relation.TrustType.direct);
+        root.addRelation("three", relation);
+        double trust2 = three.getTrust();
+
+        assert (trust != trust2);
+    }
+
+    @Test
+    public void getTrustForRelation () {
+        Principal root = buildNetwork();
+        Map<String, Principal> principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+        Principal three = principalMap.get("three");
+
+        Relation relation = new Relation(root, three, 1.0, Relation.TrustType.direct);
+        double trust = root.getTrust(relation);
+
+        assert (trust == 1.0);
+    }
+
+    @Test
     public void removeRelation() {
         Principal root = buildNetwork();
 

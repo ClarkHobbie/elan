@@ -65,9 +65,38 @@ public class Principal extends Reportable{
 
     public void addRelation (String name, Relation relation) {
         relations.put(name, relation);
+
+        double trust1 = getTrust(relation);
+        Principal destination = relation.getDestination();
+        double trust2 = destination.getTrust();
+        if (trust1 > trust2) {
+            relation.getDestination().setSource(relation.getSource());
+        }
         // leaves = buildLeaves(new HashMap<>());
     }
 
+    /**
+     * Get the trust product for the destination, using the provided relation.
+     *
+     * @param relation The relation to use, when calculating the trust,
+     * @return The level of trust for the destination.
+     */
+    public double getTrust(Relation relation) {
+        return relation.getTrust() * relation.getTrust();
+    }
+
+    /**
+     * Return the level of trust a principal enjoys.
+     * @return The level of trust a principal has, at least from the root's perspective.
+     */
+    public double getTrust() {
+        if (source == null) {
+            return 1;
+        } else {
+            Relation relation = source.relations.get(name);
+            return relation.getTrust();
+        }
+    }
 
     public boolean hasSameName(String string) {
         return name.equalsIgnoreCase(string);
