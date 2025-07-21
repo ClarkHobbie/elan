@@ -247,6 +247,9 @@ public class Principal extends Reportable{
     }
 
     public boolean equals (Object object) {
+        if (object == this)
+            return true;
+
         if (null == object || !(object instanceof Principal))
             return false;
 

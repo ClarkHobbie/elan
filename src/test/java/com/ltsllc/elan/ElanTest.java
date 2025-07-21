@@ -96,12 +96,17 @@ public class ElanTest extends ElanTestCase {
             trustStore.setRoot(buildNetwork());
             trustStore.store();
 
+            Map<String, Principal> principalMap = new HashMap<>();
+            trustStore.getRoot().buildPrincipalMap(principalMap);
+            Elan.principals = principalMap;
+
             Elan elan = new Elan();
             elan.processAddRelation(trustStore, args);
 
             args = new String[]{
                     "whatever",
-                    "show"
+                    "report",
+                    "twoDotTwo"
             };
 
             ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
@@ -112,9 +117,7 @@ public class ElanTest extends ElanTestCase {
 
             String errorOutput = new String(baos2.toByteArray());
             String output = new String(baos.toByteArray());
-            String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
-                    "    twoDotOne \r\n" +
-                    "    three ";
+            String expected = "one --> (99.0%) two --> (99.0%) twoDotTwo";
 
             assert (output.equalsIgnoreCase(expected));
         } finally {

@@ -53,9 +53,29 @@ public class Elan {
     /**
      * The real main method.
      * <P>
-     *
+     *     The differences between this method and {@link Elan#main(String[])} include
+     *     <UL>
+     *         <LI>{@link #main1(String[])} is an instance method.</LI>
+     *     </UL>
      * </P>
-     * @param args
+     * <P>
+     *     This method expects a command line to be of the form:
+     * </P>
+     * <P>
+     *     elan &lt;truststore&gt; &lt;command&gt; &lt;arguments&gt;
+     * </P>
+     * <P>
+     *     Where &lt;command&gt; is one of
+     *     <UL>
+     *         <LI>report</LI>
+     *         <LI>add principal</LI>
+     *         <LI>remove principal</LI>
+     *         <LI>add relation</LI>
+     *         <LI>remove relation</LI>
+     *     </UL>
+     * </P>
+     * @param args args[0] should contain the truststore filename, args[1] should contain the first part of the
+     *             command to be performed.
      */
     public void main1(String[] args) {
         if (args.length < 2) {
@@ -69,12 +89,15 @@ public class Elan {
         try {
             trustStore.load();
         } catch (IOException e) {
-            throw new RuntimeException("error with trustStore file, " + trustStoreFileName, e);
+            Elan.err.println("error with truststore file, " + trustStoreFileName);
+            e.printStackTrace(Elan.err);
+            Elan.exitCode = 1;
+            return;
         }
 
-        Map<String, Principal> map = new HashMap<>();
-        trustStore.getRoot().buildPrincipalMap(map);
-        principals = map;
+        Map<String, Principal> principalMap= new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
+        principals = principalMap;
 
         String command = args[1];
         args = ImprovedArrays.restOf(args,2);
@@ -86,8 +109,8 @@ public class Elan {
     public void processCommand (String command, TrustStore trustStore, String[] args) {
         if (command.equalsIgnoreCase("add")) {
             processAdd(trustStore, args);
-        } else if (command.equalsIgnoreCase("show")) {
-            processShow(trustStore);
+        } else if (command.equalsIgnoreCase("report")) {
+            processReport(trustStore, args);
         } else if (command.equalsIgnoreCase("remove")) {
             processRemove(trustStore, args);
         } else {
@@ -98,14 +121,14 @@ public class Elan {
     }
 
     private void processRemove(TrustStore trustStore, String[] args) {
-        if (args.length < 1) {
-            Elan.err.println("usage: elan <trustStore> remove <arguments>");
+        if (args.length < 2) {
+            Elan.err.println("usage: elan <trustStore> remove <what> <arguments>");
             Elan.exitCode = 1;
             return;
         }
         
         String command = args[0];
-        args = ImprovedArrays.restOf(args, 2);
+        args = ImprovedArrays.restOf(args, 1);
         if (command.equalsIgnoreCase("principal")) {
             processRemovePrincipal(trustStore, args);
         } else if (command.equalsIgnoreCase("relation")) {
@@ -192,8 +215,8 @@ public class Elan {
         trustStore.getRoot().removePrincipal(subject);
     }
 
-    public void processShow(TrustStore trustStore) {
-        trustStore.getRoot().show();
+    public void processReport(TrustStore trustStore) {
+        trustStore.getRoot().report();
     }
 
     public void processAdd(TrustStore trustStore, String[] args) {
@@ -299,9 +322,8 @@ public class Elan {
         }
 
         String subject = args[0];
-        Map<String, Principal> map = new HashMap<>();
-        trustStore.getRoot().buildPrincipalMap(map);
-        Map<String, Principal> principalMap = map;
+        Map<String, Principal> principalMap = new HashMap<>();
+        trustStore.getRoot().buildPrincipalMap(principalMap);
 
         if (principalMap.get(subject) == null) {
             Elan.err.print("subject, ");
@@ -311,7 +333,7 @@ public class Elan {
             return;
         }
 
-        Principal subjectPrincipal = map.get(subject);
+        Principal subjectPrincipal = principalMap.get(subject);
         subjectPrincipal.printReport();
     }
 
