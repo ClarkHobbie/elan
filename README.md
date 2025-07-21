@@ -3,24 +3,6 @@
 elan is about trust.  The implicit question it asks is: should I trust this person?
 
 # Details
-## Terminology
-### Principal
-In elan discussions, a Principal is a person who you want to know if you can trust, or a person who 
-has relationships with people who do have direct knowledge.  
-
-### Relation
-In elan, relations tie two principals together.  This relation has a level of trust associated with it, from the source
-principal's perspective, and whether the relation takes the form of direct experience or if it is, itself, a 
-recommendation.
-
-### TrustStore
-A truststore is where elan stores it's trust information.  It uses it in performing most operations.
-
-A truststore takes the form of a JSON file that represents the list of all principals.  Please note that in a truststore
-file, all principals (other than those in the list), are stored as names.  Thus a source for a principal is stored as
-the name of the source, rather that the principal itself.
-### Principal Names
-The name of a principal must unique across all principals.  
 
 ## Commands
 In elan, a command takes the form of
@@ -74,3 +56,21 @@ Removes the principal from the system.
 ``
 elan <truststore> remove relation <destination name>
 ``
+## Terminology
+### Principal
+In elan discussions, a Principal is a person who you want to know if you can trust, or a person who
+has relationships with people who do have direct knowledge.
+
+### Relation
+In elan, relations tie two principals together.  This relation has a level of trust associated with it, from the source
+principal's perspective, and whether the relation takes the form of direct experience or if it is, itself, a
+recommendation.
+
+### TrustStore
+A truststore is where elan stores it's trust information.  It uses it in performing most operations.
+
+A truststore takes the form of a JSON file that represents the list of all principals.  Please note that in a truststore
+file, all principals (other than those in the list), are stored as names.  Thus a source for a principal is stored as
+the name of the source, rather that the principal itself.
+### Principal Names
+The name of a principal must unique across all principals.  
