@@ -2,8 +2,6 @@ package com.ltsllc.elan;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class RelationTest {
 
     @Test
