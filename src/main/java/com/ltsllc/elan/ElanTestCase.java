@@ -2,9 +2,7 @@ package com.ltsllc.elan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ltsllc.commons.test.TestCase;
 
-import javax.imageio.IIOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,7 +14,7 @@ import java.util.Map;
 /**
  * A class that aids the testing of elan classes
  */
-public class ElanTestCase extends TestCase {
+public class ElanTestCase {
     /**
      * Build a network of {@link Principal}s and {@link Relation}s, useful for testing.
      *
