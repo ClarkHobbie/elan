@@ -4,14 +4,24 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ltsllc.commons.test.TestCase;
 
+import javax.imageio.IIOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A class that aids the testing of elan classes
+ */
 public class ElanTestCase extends TestCase {
+    /**
+     * Build a network of {@link Principal}s and {@link Relation}s, useful for testing.
+     *
+     * @return The root node of the network.
+     */
     public Principal buildNetwork () {
         Principal one = new Principal("one", null);
         Principal two = new Principal("two", one);
@@ -31,7 +41,14 @@ public class ElanTestCase extends TestCase {
         return one;
     }
 
-    public TrustStore buildTrustStore(File file) throws Exception {
+    /**
+     * Build a {@link TrustStore}, complete with a network of {@link Principal}s and {@link Relation}s.
+     *
+     * @param file The place for the trustStore to live.
+     * @return The trustStore.
+     * @throws IOException If there is a problem with building the trustStore,
+     */
+    public TrustStore buildTrustStore(File file) throws IOException {
         Principal root = buildNetwork();
         Map<String, GsonPrincipal> gsonPrincipalMap = new HashMap<>();
         root.buildGsonPrincipalMap(gsonPrincipalMap);

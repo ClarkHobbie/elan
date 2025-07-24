@@ -5,7 +5,6 @@ import java.util.Map;
 
 /**
  * A principal without cycles so it is {@link com.google.gson.Gson} safe.
- *
  */
 public class GsonPrincipal {
     protected String name;
