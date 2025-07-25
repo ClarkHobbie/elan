@@ -28,8 +28,9 @@ public class PrincipalTest extends ElanTestCase{
         two.report();
 
         String output = new String(baos.toByteArray());
+        String expected = "one --> (75.0%)  two";
 
-        assert (output.startsWith("one -->"));
+        assert (output.equalsIgnoreCase(expected));
     }
 
     @Test
