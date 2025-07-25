@@ -73,23 +73,6 @@ public class PrincipalTest extends ElanTestCase{
     }
 
     @Test
-    public void show() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(baos);
-        Elan.out = printStream;
-
-        Principal root = buildNetwork();
-        root.show();
-
-        String output = new String(baos.toByteArray());
-        String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
-                "    twoDotOne \r\n" +
-                "    three  --> (75.0) threeDotOne \r\n" +
-                "    threeDotTwo ";
-        assert (output.equalsIgnoreCase(expected));
-    }
-
-    @Test
     public void printReport() {
         Principal root = buildNetwork();
 

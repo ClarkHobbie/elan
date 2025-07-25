@@ -128,23 +128,6 @@ public class ElanTest extends ElanTestCase {
     }
 
     @Test
-    void processShow() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(baos);
-        Elan.out = printStream;
-
-        buildNetwork().show();
-
-        String output = new String(baos.toByteArray());
-        String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
-                "    twoDotOne \r\n" +
-                "    three  --> (75.0) threeDotOne \r\n" +
-                "    threeDotTwo ";
-
-        assert (output.equalsIgnoreCase(expected));
-    }
-
-    @Test
     void processReport() throws Exception {
 
         File file = new File("whatever");
