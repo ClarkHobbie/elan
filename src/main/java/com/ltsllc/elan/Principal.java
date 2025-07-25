@@ -130,27 +130,6 @@ public class Principal extends Reportable{
         return gsonPrincipal;
     }
 
-    public void report (double trust) {
-        if (source == null) {
-            return;
-        }
-
-        Relation relation = source.relations.get(name);
-
-        if (relation == null) {
-            throw new RuntimeException("relation is null");
-        }
-
-        Elan.out.print(source.name);
-        Elan.out.print(" --> ");
-        Elan.out.print(name);
-        Elan.out.print(" (");
-        Elan.out.print(trust * relation.getTrust() * 100);
-        Elan.out.print(") ");
-
-        source.report(trust * relation.getTrust());
-    }
-
     public void addRelations (Relation[] relations) {
         for (Relation relation : relations) {
             addRelation(relation.getSource().getName(), relation);
@@ -187,21 +166,22 @@ public class Principal extends Reportable{
      * Print a report for a given {@link Principal}.  If the {@link Principal} could not be found, then print
      * "unknown."
      *
-     * @param principal - the principal that the caller wants the report for.
      * @return The trust put into that principal.
      */
-    public double report(Principal principal) {
-        if (principal == null || principal.source == null) {
+    public double report() {
+        if (this == null || source == null) {
+            Elan.out.print(name);
             return 1;
         }
 
-        report(principal.source);
-        Relation relation = principal.source.getRelations().get(principal.name);
+        double temp = source.report();
+
+        Relation relation = source.getRelations().get(name);
+        Elan.out.print(" --> (");
+        Elan.out.print(relation.getTrust() * temp * 100);
+        Elan.out.print("%) ");
         Elan.out.print(" ");
         Elan.out.print(name);
-        Elan.out.print(" (");
-        Elan.out.print(relation.getTrust() * 100);
-        Elan.out.print(") ");
 
         return relation.getTrust();
     }
@@ -231,10 +211,6 @@ public class Principal extends Reportable{
             }
         }
         return map;
-    }
-
-    public void report() {
-        report(1);
     }
 
     public Principal findPrincipal(String principalName) {
@@ -371,10 +347,6 @@ public class Principal extends Reportable{
         }
 
         return gsonPrincipal;
-    }
-
-    public double printReport () {
-        return printReport(1.0);
     }
 
     /**

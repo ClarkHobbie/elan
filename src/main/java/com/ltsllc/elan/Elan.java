@@ -215,10 +215,6 @@ public class Elan {
         trustStore.getRoot().removePrincipal(subject);
     }
 
-    public void processReport(TrustStore trustStore) {
-        trustStore.getRoot().report();
-    }
-
     public void processAdd(TrustStore trustStore, String[] args) {
         if (args.length < 2) {
             Elan.err.println("usage: elan <trustStore> add <what> <arguments>");
@@ -334,7 +330,7 @@ public class Elan {
         }
 
         Principal subjectPrincipal = principalMap.get(subject);
-        subjectPrincipal.printReport();
+        subjectPrincipal.report();
     }
 
     public static void printUsage() {

@@ -33,24 +33,24 @@ public class PrincipalTest extends ElanTestCase{
     }
 
     @Test
-    public void reportFor() {
-        Principal one = new Principal("one", null);
-        Principal two = new Principal("two", one);
-        Principal three = new Principal("three", one);
+    public void report2 () {
+        Principal root = buildNetwork();
 
-        Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
-        one.addRelation("two", relation);
-        relation = new Relation(one, three, 0.75, Relation.TrustType.direct);
-        one.addRelation("three", relation);
+        Map<String, Principal> principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+
+        Principal threeDotOne = principalMap.get("threeDotOne");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Elan.out = new PrintStream(baos);
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
 
-        three.report();
+        threeDotOne.report();
 
         String output = new String(baos.toByteArray());
+        String expected = "one --> (75.0%)  three --> (56.25%)  threeDotOne";
 
-        assert (output.endsWith("three (75.0) "));
+        assert (output.equalsIgnoreCase(expected));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class PrincipalTest extends ElanTestCase{
         PrintStream printStream = new PrintStream(baos);
         Elan.out = printStream;
 
-        root.printReport();
+        root.report();
 
         String output = new String(baos.toByteArray());
         String expected = "one";

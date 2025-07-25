@@ -117,7 +117,7 @@ public class ElanTest extends ElanTestCase {
 
             String errorOutput = new String(baos2.toByteArray());
             String output = new String(baos.toByteArray());
-            String expected = "one --> (99.0%) two --> (99.0%) twoDotTwo";
+            String expected = "one --> (99.0%)  two --> (98.00999999999999%)  twoDotTwo";
 
             assert (output.equalsIgnoreCase(expected));
         } finally {
@@ -167,7 +167,7 @@ public class ElanTest extends ElanTestCase {
             elan.processReport(trustStore, args);
 
             String output = new String(baos.toByteArray());
-            String expected = "one --> (75.0%) three";
+            String expected = "one --> (75.0%)  three";
 
             assert(output.equalsIgnoreCase(expected));
         } finally {
