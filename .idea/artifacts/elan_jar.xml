@@ -2,7 +2,6 @@
   <artifact type="jar" name="elan:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/elan_jar</output-path>
     <root id="archive" name="elan.jar">
-      <element id="module-output" name="elan" />
       <element id="module-output" name="main" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../commons/out/artifacts/commons_jar/commons.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" path-in-jar="/" />

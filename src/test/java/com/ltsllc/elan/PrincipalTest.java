@@ -54,6 +54,31 @@ public class PrincipalTest extends ElanTestCase{
     }
 
     @Test
+    public void report3 () {
+        Map<String, Principal> principalMap = new HashMap<>();
+
+        Principal root = buildNetwork();
+
+        root.buildPrincipalMap(principalMap);
+
+        Principal threeDotOne = principalMap.get("threeDotOne");
+        Principal four = new Principal("four", threeDotOne);
+        Relation relation = new Relation(threeDotOne, four, 0.75, Relation.TrustType.direct);
+        threeDotOne.addRelation("four", relation);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        Elan.out = printStream;
+
+        four.report();
+
+        String output = new String(baos.toByteArray());
+        String expected = "one --> (75.0%)  three --> (56.25%)  threeDotOne --> (56.25%)  four";
+
+        assert (output.equalsIgnoreCase(expected));
+    }
+
+    @Test
     public void buildLeaves() {
         Principal one = new Principal("one", null);
         Principal two = new Principal("two", one);

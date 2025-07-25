@@ -4,9 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+    <packaging>jar</packaging>
+
     <groupId>org.example</groupId>
     <artifactId>elan</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <scm>
+        <connection>scm:local|C:/Users/clark/IdeaProjects/elan|elan</connection>
+    </scm>
 
     <properties>
         <maven.compiler.source>27</maven.compiler.source>
@@ -14,6 +21,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>elan</id>
+            <url>http://central_nexus/server</url>
+        </repository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>elan</id>
+            <name>My Elan Repository</name>
+            <url>https://ltsllc.com/maven-repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -23,15 +49,25 @@
         </dependency>
 
         <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.13.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.13.1</version> <!-- Use the appropriate version -->
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.13.1</version>
-        </dependency>
+
 
         <!-- log4j -->
 
@@ -45,9 +81,14 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.1</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>com.ltsllc</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
+
+
     <build>
         <plugins>
             <plugin>
@@ -57,6 +98,8 @@
                     <source>24</source>
                     <target>24</target>
                     <compilerArgs>--enable-preview</compilerArgs>
+
+
                 </configuration>
             </plugin>
 
@@ -73,15 +116,90 @@
                         </goals>
                         <configuration>
                             <excludeScope>system</excludeScope>
-                            <excludes>META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA</excludes>
+                            <excludes>META-INF/*.SF</excludes>
+                            <excludes>META-INF/*.DSA</excludes>
+                            <excludes>META-INF/*.RSA</excludes>
                             <excludeGroupIds>junit,org.mockito,org.hamcrest</excludeGroupIds>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.ltsllc.elan.Elan</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/my-assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
 
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <file>C:/Users/clark/IdeaProjects/commons/out/artifacts/commons_jar/commons.jar</file>
+                    <groupId>com.ltsllc</groupId>
+                    <artifactId>commons</artifactId>
+                    <version>1.0</version>
+                    <packaging>jar</packaging>
+                    <generatePom>true</generatePom>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
