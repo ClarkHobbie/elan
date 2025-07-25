@@ -73,7 +73,7 @@ public class PrincipalTest extends ElanTestCase{
         four.report();
 
         String output = new String(baos.toByteArray());
-        String expected = "one --> (75.0%)  three --> (56.25%)  threeDotOne --> (56.25%)  four";
+        String expected = "one --> (75.0%)  three --> (56.25%)  threeDotOne --> (42.1875%)  four";
 
         assert (output.equalsIgnoreCase(expected));
     }

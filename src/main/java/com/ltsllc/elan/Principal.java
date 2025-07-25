@@ -174,11 +174,11 @@ public class Principal extends Reportable{
             return 1;
         }
 
-        double temp = source.report();
+        source.report();
 
         Relation relation = source.getRelations().get(name);
         Elan.out.print(" --> (");
-        Elan.out.print(relation.getTrust() * temp * 100);
+        Elan.out.print(relation.getTrust() * relation.getSource().getTrust() * 100);
         Elan.out.print("%) ");
         Elan.out.print(" ");
         Elan.out.print(name);
