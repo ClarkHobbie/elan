@@ -138,7 +138,8 @@ public class ElanTest extends ElanTestCase {
         String output = new String(baos.toByteArray());
         String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
                 "    twoDotOne \r\n" +
-                "    three ";
+                "    three  --> (75.0) threeDotOne \r\n" +
+                "    threeDotTwo ";
 
         assert (output.equalsIgnoreCase(expected));
     }

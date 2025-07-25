@@ -82,7 +82,10 @@ public class PrincipalTest extends ElanTestCase{
         root.show();
 
         String output = new String(baos.toByteArray());
-        String expected = new String("one  --> (99.0) two  --> (99.0) twoDotTwo \r\n    twoDotOne \r\n    three ");
+        String expected = "one  --> (99.0) two  --> (99.0) twoDotTwo \r\n" +
+                "    twoDotOne \r\n" +
+                "    three  --> (75.0) threeDotOne \r\n" +
+                "    threeDotTwo ";
         assert (output.equalsIgnoreCase(expected));
     }
 

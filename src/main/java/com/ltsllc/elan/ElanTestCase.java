@@ -26,6 +26,8 @@ public class ElanTestCase {
         Principal twoDotOne = new Principal("twoDotOne", two);
         Principal twoDotTwo = new Principal("twoDotTwo", two);
         Principal three = new Principal("three", one);
+        Principal threeDotOne = new Principal("threeDotOne", three);
+        Principal threeDotTwo = new Principal("threeDotTwo", three);
 
         Relation relation = new Relation(one, two, 0.99, Relation.TrustType.recommendation);
         one.addRelation("two", relation);
@@ -35,6 +37,10 @@ public class ElanTestCase {
         two.addRelation("twoDotOne", relation);
         relation = new Relation(two, twoDotTwo, 0.99, Relation.TrustType.recommendation);
         two.addRelation("twoDotTwo", relation);
+        relation = new Relation(three, threeDotOne, 0.75, Relation.TrustType.direct);
+        three.addRelation("threeDotOne", relation);
+        relation = new Relation(three, threeDotTwo, 0.75, Relation.TrustType.direct);
+        three.addRelation("threeDotTwo", relation);
 
         return one;
     }

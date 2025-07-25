@@ -94,7 +94,7 @@ public class Principal extends Reportable{
             return 1;
         } else {
             Relation relation = source.relations.get(name);
-            return relation.getTrust();
+            return relation.getTrust() * source.getTrust();
         }
     }
 
