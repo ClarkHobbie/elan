@@ -64,11 +64,6 @@ public class Principal extends Reportable{
     }
 
     public void addRelation (String name, Relation relation) {
-        if (relation == null) {
-            Elan.err.println("relation is null");
-            Exception e = new Exception();
-            e.printStackTrace();
-        }
         relations.put(name, relation);
 
         double trust1 = getTrust(relation);
@@ -102,7 +97,8 @@ public class Principal extends Reportable{
             Relation relation = source.relations.get(name);
 
             if (relation == null) {
-                Elan.err.println("the relation is null");
+                Elan.err.println("name = " + name);
+                Elan.err.println("source is " + ((source == null) ? "not null" : "null"));
                 Exception e = new Exception();
                 e.printStackTrace();
             }
@@ -404,5 +400,17 @@ public class Principal extends Reportable{
 
     public void removeRelation (Relation relation) {
         relations.remove(relation.getDestination().getName());
+    }
+
+    public void buildGsonPrincipalList(List<GsonPrincipal> gsonPrincipals, Map<String, GsonPrincipal> gsonPrincipalMap) {
+        if (!gsonPrincipalMap.containsKey(name)) {
+            GsonPrincipal gsonPrincipal = this.buildGsonPrincipal();
+            gsonPrincipals.add(gsonPrincipal);
+            gsonPrincipalMap.put(name, gsonPrincipal);
+
+            for (Relation relation : relations.values()) {
+                relation.getDestination().buildGsonPrincipalList(gsonPrincipals, gsonPrincipalMap);
+            }
+        }
     }
 }

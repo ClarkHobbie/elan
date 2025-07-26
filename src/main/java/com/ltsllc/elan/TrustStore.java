@@ -133,7 +133,8 @@ public class TrustStore {
 
         Map<String, GsonPrincipal> map = new HashMap<>();
         root.buildGsonPrincipalMap(map);
-        List<GsonPrincipal> gsonPrincipals = new ArrayList<GsonPrincipal>(map.values());
+        List<GsonPrincipal> gsonPrincipals = new ArrayList<GsonPrincipal>();
+        root.buildGsonPrincipalList(gsonPrincipals, new HashMap<>());
         String json = gson.toJson(gsonPrincipals);
         fileOutputStream.write(json.getBytes());
 

@@ -2,6 +2,7 @@ package com.ltsllc.elan;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ltsllc.commons.io.ImprovedFile;
 import com.ltsllc.commons.io.TextFile;
 import org.junit.jupiter.api.Test;
 
@@ -68,10 +69,11 @@ class TrustStoreTest extends ElanTestCase {
 
             Map<String, GsonPrincipal> map = new HashMap<>();
             root.buildGsonPrincipalMap(map);
-            List<GsonPrincipal> list = new ArrayList<GsonPrincipal>(map.values());
+            List<GsonPrincipal> list = new ArrayList<GsonPrincipal>();
+            root.buildGsonPrincipalList(list, new HashMap<>());
 
-            String json = gson.toJson(list);
             FileWriter fileWriter = new FileWriter(file);
+            String json = gson.toJson(list);
             fileWriter.write(json);
             fileWriter.close();
 
@@ -79,12 +81,10 @@ class TrustStoreTest extends ElanTestCase {
             trustStore.setRoot(root);
             trustStore.store();
 
-            TextFile textFile1 = new TextFile(file);
-            textFile1.load();
-            TextFile textFile2 = new TextFile(file2);
-            textFile2.load();
+            ImprovedFile improvedFile1 = new ImprovedFile(file);
+            ImprovedFile improvedFile2 = new ImprovedFile(file2);
 
-            assert (textFile1.equals(textFile2));
+            assert (improvedFile1.contentsEquals(improvedFile2));
         } finally {
             if (file.exists()) {
                 file.delete();

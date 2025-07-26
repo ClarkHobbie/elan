@@ -3,6 +3,8 @@ package com.ltsllc.elan;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,10 +57,15 @@ public class PrincipalTest extends ElanTestCase{
     }
 
     @Test
-    public void report3 () {
+    public void report3 () throws IOException {
         Map<String, Principal> principalMap = new HashMap<>();
 
+        File truststoreFile = new File("whatever");
         Principal root = buildNetwork();
+        TrustStore trustStore = new TrustStore(truststoreFile);
+        trustStore.setRoot(root);
+
+        trustStore.store();
 
         root.buildPrincipalMap(principalMap);
 
@@ -67,10 +74,18 @@ public class PrincipalTest extends ElanTestCase{
         Relation relation = new Relation(threeDotOne, four, 0.75, Relation.TrustType.direct);
         threeDotOne.addRelation("four", relation);
 
+        trustStore.store();
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
         Elan.out = printStream;
 
+        trustStore.load();
+        root = trustStore.getRoot();
+        principalMap = new HashMap<>();
+        root.buildPrincipalMap(principalMap);
+
+        four = principalMap.get("four");
         four.report();
 
         String output = new String(baos.toByteArray());
