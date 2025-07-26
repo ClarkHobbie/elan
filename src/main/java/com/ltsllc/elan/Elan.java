@@ -296,6 +296,12 @@ public class Elan {
         Relation relation = new Relation(source, destination, trustValue, trustType);
 
         source.addRelation(relation.getDestination().getName(), relation);
+
+        try {
+            trustStore.store();
+        } catch (IOException e) {
+            throw new RuntimeException("error trying to store changes", e);
+        }
     }
 
     /**

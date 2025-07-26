@@ -64,6 +64,11 @@ public class Principal extends Reportable{
     }
 
     public void addRelation (String name, Relation relation) {
+        if (relation == null) {
+            Elan.err.println("relation is null");
+            Exception e = new Exception();
+            e.printStackTrace();
+        }
         relations.put(name, relation);
 
         double trust1 = getTrust(relation);
@@ -85,6 +90,7 @@ public class Principal extends Reportable{
         return relation.getTrust() * relation.getTrust();
     }
 
+
     /**
      * Return the level of trust a principal enjoys.
      * @return The level of trust a principal has, at least from the root's perspective.
@@ -94,6 +100,12 @@ public class Principal extends Reportable{
             return 1;
         } else {
             Relation relation = source.relations.get(name);
+
+            if (relation == null) {
+                Elan.err.println("the relation is null");
+                Exception e = new Exception();
+                e.printStackTrace();
+            }
             return relation.getTrust() * source.getTrust();
         }
     }
